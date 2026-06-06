@@ -1,0 +1,26 @@
+{
+  "name": "NeoWave — Private P2P Messenger",
+  "short_name": "NeoWave",
+  "description": "Private peer-to-peer messenger. No servers. No accounts. No surveillance.",
+  "start_url": "/app.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#04080f",
+  "theme_color": "#04080f",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["communication", "productivity"],
+  "screenshots": []
+}

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeoWave — Private P2P Messenger</title>
+<meta name="description" content="Private peer-to-peer messenger. No servers. No accounts. No surveillance. Just pure encrypted connection between devices.">
+<meta name="theme-color" content="#04080f">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #04080f;
+    --surface: #080e1a;
+    --panel:   #0c1422;
+    --border:  #1a2a40;
+    --wave:    #0077ff;
+    --wave2:   #00c8ff;
+    --wave-dim:#00336a;
+    --gold:    #f0a500;
+    --white:   #e8f0ff;
+    --gray:    #4a6080;
+    --green:   #00e896;
+    --red:     #ff4455;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+
+  /* ── BACKGROUND ── */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0,119,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,119,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .bg-orb {
+    position: fixed; pointer-events: none; z-index: 0; border-radius: 50%;
+    filter: blur(80px); opacity: 0.15;
+  }
+  .bg-orb-1 { width: 600px; height: 600px; background: var(--wave); top: -200px; left: -200px; animation: orbdrift 18s ease-in-out infinite alternate; }
+  .bg-orb-2 { width: 400px; height: 400px; background: var(--wave2); bottom: -100px; right: -100px; animation: orbdrift 14s ease-in-out infinite alternate-reverse; }
+  @keyframes orbdrift { from{transform:translate(0,0)} to{transform:translate(40px,30px)} }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; padding: 0 5%; height: 64px;
+    border-bottom: 1px solid rgba(26,42,64,0.6);
+    background: rgba(4,8,15,0.85); backdrop-filter: blur(16px);
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--wave), var(--wave2));
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    box-shadow: 0 0 20px rgba(0,119,255,0.4);
+    animation: logopulse 3s ease-in-out infinite;
+  }
+  @keyframes logopulse { 0%,100%{box-shadow:0 0 14px rgba(0,119,255,0.4)} 50%{box-shadow:0 0 28px rgba(0,200,255,0.7)} }
+  .nav-logo-text {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.02em;
+    background: linear-gradient(90deg, var(--wave2), var(--wave));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .nav-spacer { flex: 1; }
+  .nav-badge {
+    display: flex; align-items: center; gap: 6px; padding: 5px 12px;
+    border: 1px solid rgba(0,232,150,0.3); border-radius: 20px;
+    font-family: 'Syne Mono', monospace; font-size: 10px; color: var(--green);
+    background: rgba(0,232,150,0.06); letter-spacing: 0.1em; margin-right: 14px;
+  }
+  .nav-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .nav-cta {
+    padding: 9px 20px;
+    background: linear-gradient(135deg, var(--wave), #0055cc);
+    border: none; border-radius: 10px; color: white;
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    cursor: pointer; text-decoration: none; letter-spacing: 0.02em;
+    transition: all 0.2s; box-shadow: 0 4px 16px rgba(0,119,255,0.3);
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,119,255,0.5); }
+
+  /* ── SECTIONS ── */
+  section { position: relative; z-index: 1; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 100px 5% 60px; text-align: center;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 16px; border: 1px solid rgba(0,119,255,0.3);
+    border-radius: 20px; background: rgba(0,119,255,0.07);
+    font-family: 'Syne Mono', monospace; font-size: 11px;
+    color: var(--wave2); letter-spacing: 0.12em; margin-bottom: 28px;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero-eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--wave2); animation: blink 1.4s step-end infinite; }
+  @keyframes blink { 50%{opacity:0} }
+
+  .hero-title {
+    font-size: clamp(42px, 8vw, 88px); font-weight: 800;
+    line-height: 1.0; letter-spacing: -0.03em; margin-bottom: 22px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  .hero-title .line2 {
+    background: linear-gradient(90deg, var(--wave2), var(--wave), var(--wave2));
+    background-size: 200%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    animation: fadeUp 0.8s 0.1s ease both, shimmertext 4s linear infinite;
+  }
+  @keyframes shimmertext { from{background-position:0%} to{background-position:200%} }
+
+  .hero-sub {
+    font-size: clamp(15px, 2.5vw, 19px); color: var(--gray); max-width: 560px;
+    line-height: 1.65; margin-bottom: 40px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .hero-actions {
+    display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+  .btn-primary {
+    padding: 15px 34px; background: linear-gradient(135deg, var(--wave), #0055cc);
+    border: none; border-radius: 14px; color: white;
+    font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; text-decoration: none; letter-spacing: 0.02em;
+    transition: all 0.2s; box-shadow: 0 6px 30px rgba(0,119,255,0.4);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,119,255,0.55); }
+  .btn-secondary {
+    padding: 15px 34px; background: transparent;
+    border: 1px solid var(--border); border-radius: 14px; color: var(--white);
+    font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; text-decoration: none; letter-spacing: 0.02em;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--wave-dim); background: rgba(0,119,255,0.06); }
+
+  .hero-trust {
+    display: flex; align-items: center; gap: 24px; margin-top: 48px;
+    font-family: 'Syne Mono', monospace; font-size: 11px; color: var(--gray);
+    letter-spacing: 0.08em; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+  .hero-trust-item { display: flex; align-items: center; gap: 6px; }
+  .hero-trust-sep { color: var(--border); }
+
+  /* ── PREVIEW ── */
+  .preview-wrap {
+    max-width: 380px; margin: 60px auto 0; position: relative;
+    animation: fadeUp 0.8s 0.35s ease both;
+  }
+  .preview-glow {
+    position: absolute; inset: -30px; border-radius: 30px;
+    background: radial-gradient(ellipse, rgba(0,119,255,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .preview-phone {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 22px;
+    overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  .preview-topbar {
+    display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+    border-bottom: 1px solid var(--border); background: rgba(8,14,26,0.97);
+  }
+  .preview-logo-icon {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: linear-gradient(135deg, var(--wave), var(--wave2));
+    display: flex; align-items: center; justify-content: center; font-size: 13px;
+  }
+  .preview-title { font-size: 14px; font-weight: 800; background: linear-gradient(90deg,var(--wave2),var(--wave)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .preview-enc { margin-left: auto; font-family:'Syne Mono',monospace; font-size:9px; color:var(--green); border:1px solid rgba(0,232,150,0.3); padding:2px 7px; border-radius:10px; }
+  .preview-msgs { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .pmsg { display: flex; flex-direction: column; gap: 3px; }
+  .pmsg.mine { align-items: flex-end; }
+  .pmsg.theirs { align-items: flex-start; }
+  .pmsg-name { font-size: 10px; color: var(--gray); font-family:'Syne Mono',monospace; padding: 0 4px; }
+  .pmsg-bubble { padding: 8px 12px; border-radius: 14px; font-size: 13px; max-width: 80%; }
+  .pmsg.mine .pmsg-bubble { background: linear-gradient(135deg,var(--wave),#0055cc); color:white; border-bottom-right-radius:3px; }
+  .pmsg.theirs .pmsg-bubble { background: var(--panel); border:1px solid var(--border); border-bottom-left-radius:3px; }
+  .pmsg-typing { display:flex; align-items:center; gap:4px; padding:8px 12px; background:var(--panel); border:1px solid var(--border); border-radius:14px; border-bottom-left-radius:3px; width:fit-content; }
+  .tdot { width:5px; height:5px; border-radius:50%; background:var(--gray); animation:tdot 1.2s ease-in-out infinite; }
+  .tdot:nth-child(2){animation-delay:0.2s} .tdot:nth-child(3){animation-delay:0.4s}
+  @keyframes tdot { 0%,60%,100%{transform:translateY(0);background:var(--gray)} 30%{transform:translateY(-4px);background:var(--wave2)} }
+  .preview-sys { text-align:center; font-size:10px; color:var(--gray); font-family:'Syne Mono',monospace; padding:2px 0; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── HOW IT WORKS ── */
+  .section-eyebrow {
+    font-family: 'Syne Mono', monospace; font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--wave2); margin-bottom: 14px;
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 44px); font-weight: 800;
+    letter-spacing: -0.02em; margin-bottom: 14px; line-height: 1.1;
+  }
+  .section-sub { font-size: 16px; color: var(--gray); line-height: 1.65; max-width: 520px; }
+
+  .how { padding: 100px 5%; }
+  .how-inner { max-width: 1100px; margin: 0 auto; }
+  .how-header { margin-bottom: 60px; }
+  .how-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 24px; }
+  .how-step {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+    padding: 28px 24px; position: relative; overflow: hidden; transition: all 0.3s;
+  }
+  .how-step::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--wave), var(--wave2));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .how-step:hover { border-color: var(--wave-dim); transform: translateY(-3px); }
+  .how-step:hover::before { opacity: 1; }
+  .step-num {
+    font-family: 'Syne Mono', monospace; font-size: 11px; color: var(--wave2);
+    letter-spacing: 0.15em; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .step-num::after { content:''; flex:1; height:1px; background:var(--border); }
+  .step-icon { font-size: 32px; margin-bottom: 14px; }
+  .step-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .step-desc { font-size: 14px; color: var(--gray); line-height: 1.6; }
+
+  /* ── FEATURES ── */
+  .features { padding: 100px 5%; background: linear-gradient(180deg, transparent, rgba(8,14,26,0.5), transparent); }
+  .features-inner { max-width: 1100px; margin: 0 auto; }
+  .features-header { margin-bottom: 60px; }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 20px; }
+  .feat-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+    padding: 26px 22px; transition: all 0.3s;
+  }
+  .feat-card:hover { border-color: var(--wave-dim); box-shadow: 0 8px 32px rgba(0,119,255,0.1); }
+  .feat-icon {
+    width: 46px; height: 46px; border-radius: 12px; margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .feat-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .feat-desc { font-size: 13px; color: var(--gray); line-height: 1.65; }
+
+  /* ── PRIVACY ── */
+  .privacy { padding: 100px 5%; }
+  .privacy-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .privacy-stats { display: flex; flex-direction: column; gap: 14px; }
+  .pstat-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px 20px; display: flex; align-items: center; gap: 16px;
+    transition: all 0.3s;
+  }
+  .pstat-card:hover { border-color: var(--wave-dim); }
+  .pstat-icon-wrap {
+    width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .pstat-label { font-size: 12px; color: var(--gray); margin-bottom: 2px; font-family:'Syne Mono',monospace; letter-spacing:0.06em; }
+  .pstat-value { font-size: 15px; font-weight: 700; color: var(--white); }
+
+  /* ── CTA ── */
+  .cta-section {
+    padding: 100px 5%; text-align: center;
+  }
+  .cta-card {
+    max-width: 700px; margin: 0 auto;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 24px;
+    padding: 60px 40px; position: relative; overflow: hidden;
+  }
+  .cta-card::before {
+    content: ''; position: absolute; inset: 0; border-radius: 24px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,119,255,0.12) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .cta-wave { font-size: 52px; margin-bottom: 16px; animation: wavehand 2s ease-in-out infinite; display:block; }
+  @keyframes wavehand { 0%,100%{transform:rotate(0)} 25%{transform:rotate(18deg)} 75%{transform:rotate(-9deg)} }
+  .cta-title { font-size: clamp(26px,4vw,40px); font-weight: 800; margin-bottom: 12px; letter-spacing:-0.02em; }
+  .cta-sub { font-size: 16px; color: var(--gray); margin-bottom: 36px; line-height:1.6; }
+  .cta-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .cta-note { font-family:'Syne Mono',monospace; font-size:11px; color:var(--gray); margin-top:20px; letter-spacing:0.06em; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border); padding: 28px 5%;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    font-family: 'Syne Mono', monospace; font-size: 11px; color: var(--gray); letter-spacing: 0.08em;
+  }
+  footer span { color: var(--wave-dim); }
+  .footer-links { display:flex; gap:20px; }
+  .footer-links a { color:var(--gray); text-decoration:none; transition:color 0.2s; }
+  .footer-links a:hover { color:var(--wave2); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .privacy-inner { grid-template-columns: 1fr; gap: 40px; }
+    .nav-badge { display: none; }
+    .cta-card { padding: 40px 24px; }
+    footer { flex-direction: column; text-align: center; }
+  }
+  @media (max-width: 480px) {
+    .hero-actions { flex-direction: column; align-items: center; }
+    .btn-primary, .btn-secondary { width: 100%; max-width: 300px; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-icon">🌊</div>
+    <div class="nav-logo-text">NeoWave</div>
+  </a>
+  <div class="nav-spacer"></div>
+  <div class="nav-badge"><div class="nav-badge-dot"></div> P2P ENCRYPTED</div>
+  <a href="app.html" class="nav-cta">Launch App →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <div class="hero-eyebrow-dot"></div>
+    NO SERVERS · NO ACCOUNTS · NO SURVEILLANCE
+  </div>
+  <h1 class="hero-title">
+    Chat Without<br>
+    <span class="line2">Leaving a Trace</span>
+  </h1>
+  <p class="hero-sub">
+    NeoWave is a private peer-to-peer messenger. Messages travel directly between devices — no server ever sees them, stores them, or can hand them over.
+  </p>
+  <div class="hero-actions">
+    <a href="app.html" class="btn-primary">🌊 Open a Wave</a>
+    <a href="#how" class="btn-secondary">How it works</a>
+  </div>
+  <div class="hero-trust">
+    <div class="hero-trust-item">🔒 End-to-end encrypted</div>
+    <span class="hero-trust-sep">·</span>
+    <div class="hero-trust-item">👁️ Zero server storage</div>
+    <span class="hero-trust-sep">·</span>
+    <div class="hero-trust-item">📁 P2P file transfer</div>
+    <span class="hero-trust-sep">·</span>
+    <div class="hero-trust-item">⚡ No account needed</div>
+  </div>
+
+  <!-- PHONE PREVIEW -->
+  <div class="preview-wrap">
+    <div class="preview-glow"></div>
+    <div class="preview-phone">
+      <div class="preview-topbar">
+        <div class="preview-logo-icon">🌊</div>
+        <div class="preview-title">NeoWave</div>
+        <div class="preview-enc">P2P ENCRYPTED</div>
+      </div>
+      <div class="preview-msgs">
+        <div class="preview-sys">— Surge joined the Wave 🌊 —</div>
+        <div class="pmsg theirs">
+          <div class="pmsg-name" style="color:#00c8ff">Surge</div>
+          <div class="pmsg-bubble">yo this is actually private? 👀</div>
+        </div>
+        <div class="pmsg mine">
+          <div class="pmsg-name">You</div>
+          <div class="pmsg-bubble">100% — no server between us</div>
+        </div>
+        <div class="pmsg theirs">
+          <div class="pmsg-name" style="color:#00c8ff">Surge</div>
+          <div class="pmsg-typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="how-inner">
+    <div class="how-header">
+      <div class="section-eyebrow">// HOW IT WORKS</div>
+      <h2 class="section-title">Three steps.<br>Fully private.</h2>
+      <p class="section-sub">No signups. No installs. Just open, share, and talk.</p>
+    </div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="step-num">STEP 01</div>
+        <div class="step-icon">🌊</div>
+        <div class="step-title">Open a Wave</div>
+        <div class="step-desc">Hit Launch App, enter your name, set an optional password and participant limit. Your Wave ID is generated instantly — no account, no email.</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">STEP 02</div>
+        <div class="step-icon">🔗</div>
+        <div class="step-title">Share the Link</div>
+        <div class="step-desc">Copy your invite link and send it to whoever you want. They open it in any browser and join directly — the link is the only key.</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">STEP 03</div>
+        <div class="step-icon">⚡</div>
+        <div class="step-title">Talk Freely</div>
+        <div class="step-desc">Messages, files, and typing indicators flow directly device-to-device. When everyone leaves, the Wave closes. Nothing is saved anywhere.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="features-inner">
+    <div class="features-header">
+      <div class="section-eyebrow">// FEATURES</div>
+      <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(0,119,255,0.12)">🔒</div>
+        <div class="feat-title">P2P Encryption</div>
+        <div class="feat-desc">WebRTC DTLS encryption on every connection. Messages go directly between devices — no relay server reads your data.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(0,232,150,0.1)">📁</div>
+        <div class="feat-title">File Transfer</div>
+        <div class="feat-desc">Send files up to 50MB peer-to-peer. Images, APKs, documents — chunked and streamed directly to the recipient with live progress.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(0,200,255,0.1)">⌨️</div>
+        <div class="feat-title">Live Typing</div>
+        <div class="feat-desc">See what the other person is typing in real time as they type it. The Wave feels alive — not like waiting for a letter.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(240,165,0,0.1)">🔑</div>
+        <div class="feat-title">Password Protection</div>
+        <div class="feat-desc">Lock your Wave with a password. Only people who know it can join — even if they have the link.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(255,68,85,0.1)">👥</div>
+        <div class="feat-title">Participant Limits</div>
+        <div class="feat-desc">Set a max of 2, 5, 10, or unlimited. The Wave rejects new connections once the limit is hit.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon" style="background:rgba(170,119,255,0.1)">📱</div>
+        <div class="feat-title">Works Everywhere</div>
+        <div class="feat-desc">Mobile, tablet, desktop. Android, iOS, Windows, Mac. Any browser that supports WebRTC — which is all of them.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRIVACY -->
+<section class="privacy" id="privacy">
+  <div class="privacy-inner">
+    <div>
+      <div class="section-eyebrow">// PRIVACY SHIELD</div>
+      <h2 class="section-title">Nothing stored.<br>Ever.</h2>
+      <p class="section-sub" style="margin-bottom:28px">
+        Most "private" messengers still run your messages through their servers. NeoWave doesn't. There's no database, no logs, no message history — because there's no server to store any of it.
+      </p>
+      <p class="section-sub">
+        When the Wave closes, it's gone. No backups. No recovery. That's the point.
+      </p>
+    </div>
+    <div class="privacy-stats">
+      <div class="pstat-card">
+        <div class="pstat-icon-wrap" style="background:rgba(0,119,255,0.1)">💬</div>
+        <div>
+          <div class="pstat-label">MESSAGE STORAGE</div>
+          <div class="pstat-value">Zero — P2P only</div>
+        </div>
+      </div>
+      <div class="pstat-card">
+        <div class="pstat-icon-wrap" style="background:rgba(0,232,150,0.1)">📁</div>
+        <div>
+          <div class="pstat-label">FILE STORAGE</div>
+          <div class="pstat-value">Zero — direct transfer</div>
+        </div>
+      </div>
+      <div class="pstat-card">
+        <div class="pstat-icon-wrap" style="background:rgba(255,68,85,0.1)">🗄️</div>
+        <div>
+          <div class="pstat-label">SERVER LOGS</div>
+          <div class="pstat-value">None</div>
+        </div>
+      </div>
+      <div class="pstat-card">
+        <div class="pstat-icon-wrap" style="background:rgba(240,165,0,0.1)">👤</div>
+        <div>
+          <div class="pstat-label">ACCOUNTS REQUIRED</div>
+          <div class="pstat-value">None — ever</div>
+        </div>
+      </div>
+      <div class="pstat-card">
+        <div class="pstat-icon-wrap" style="background:rgba(170,119,255,0.1)">👁️</div>
+        <div>
+          <div class="pstat-label">SURVEILLANCE</div>
+          <div class="pstat-value">Zero</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-card">
+    <span class="cta-wave">🌊</span>
+    <h2 class="cta-title">Ready to go off the grid?</h2>
+    <p class="cta-sub">Open a Wave in seconds. No signup. No install. Just private.</p>
+    <div class="cta-actions">
+      <a href="app.html" class="btn-primary">🌊 Launch NeoWave</a>
+    </div>
+    <p class="cta-note">NO SERVERS · NO ACCOUNTS · NO TRACES</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>NEOWAVE · <span>PRIVATE P2P MESSENGER</span> · BY GENESIS GROUP</div>
+  <div class="footer-links">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#privacy">Privacy</a>
+    <a href="app.html">Launch App</a>
+  </div>
+</footer>
+
+<script>
+// Scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.how-step, .feat-card, .pstat-card').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  observer.observe(el);
+});
+
+// PWA install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+</script>
+</body>
+</html>
