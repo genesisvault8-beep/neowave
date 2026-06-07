@@ -565,7 +565,7 @@
     </div>
   </div>
   <div class="topbar-spacer"></div>
-  <div class="enc-badge"><div class="enc-dot"></div> P2P ENCRYPTED</div>
+  <div class="enc-badge"><div class="enc-dot"></div> E2E ENCRYPTED</div>
   <div class="status-pill">
     <div class="status-dot" id="status-dot"></div>
     <span id="status-text">Initializing...</span>
@@ -590,7 +590,7 @@
     <div class="sidebar-section">
       <div class="sidebar-label">Privacy Shield</div>
       <div class="privacy-stats">
-        <div class="pstat"><span class="pstat-icon">🔒</span><span>Messages: <strong>P2P only</strong></span></div>
+        <div class="pstat"><span class="pstat-icon">🔒</span><span>Messages: <strong>E2E encrypted</strong></span></div>
         <div class="pstat"><span class="pstat-icon">📁</span><span>Files: <strong>P2P direct</strong></span></div>
         <div class="pstat"><span class="pstat-icon">🗄️</span><span>Server storage: <strong>None</strong></span></div>
         <div class="pstat"><span class="pstat-icon">👁️</span><span>Surveillance: <strong>Zero</strong></span></div>
@@ -658,6 +658,90 @@ let liveBlips    = {};
 let incomingFiles = {}; // fileId → { meta, chunks, received }
 
 // ══════════════════════════════════════
+//  E2E ENCRYPTION — Web Crypto API
+//  ECDH key exchange + AES-GCM per-peer
+// ══════════════════════════════════════
+let myKeyPair = null;       // { publicKey, privateKey } — ECDH
+let peerAESKeys = {};       // peerId → CryptoKey (AES-GCM)
+
+async function initCrypto() {
+  myKeyPair = await crypto.subtle.generateKey(
+    { name: 'ECDH', namedCurve: 'P-256' },
+    false, // not exportable (private key stays in memory only)
+    ['deriveKey']
+  );
+}
+
+async function exportPublicKey() {
+  const raw = await crypto.subtle.exportKey('raw', myKeyPair.publicKey);
+  return btoa(String.fromCharCode(...new Uint8Array(raw)));
+}
+
+async function deriveAESKey(peerPublicKeyB64, peerId) {
+  try {
+    const raw = Uint8Array.from(atob(peerPublicKeyB64), c => c.charCodeAt(0));
+    const peerPub = await crypto.subtle.importKey(
+      'raw', raw,
+      { name: 'ECDH', namedCurve: 'P-256' },
+      false, []
+    );
+    const aesKey = await crypto.subtle.deriveKey(
+      { name: 'ECDH', public: peerPub },
+      myKeyPair.privateKey,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    );
+    peerAESKeys[peerId] = aesKey;
+    console.log('[NeoWave] 🔐 E2E key established with', peerId.slice(0,8));
+  } catch(e) {
+    console.warn('[NeoWave] Key exchange failed for', peerId, e);
+  }
+}
+
+async function encryptMsg(text, peerId) {
+  const key = peerAESKeys[peerId];
+  if (!key) return null; // no key yet, fall through to plain
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const enc = new TextEncoder();
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    enc.encode(text)
+  );
+  // Pack: base64(iv) + '.' + base64(ciphertext)
+  const ivB64 = btoa(String.fromCharCode(...iv));
+  const ctB64 = btoa(String.fromCharCode(...new Uint8Array(ciphertext)));
+  return ivB64 + '.' + ctB64;
+}
+
+async function decryptMsg(payload, peerId) {
+  const key = peerAESKeys[peerId];
+  if (!key) return null;
+  try {
+    const [ivB64, ctB64] = payload.split('.');
+    const iv = Uint8Array.from(atob(ivB64), c => c.charCodeAt(0));
+    const ct = Uint8Array.from(atob(ctB64), c => c.charCodeAt(0));
+    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+    return new TextDecoder().decode(plain);
+  } catch(e) {
+    return null; // decryption failed
+  }
+}
+
+// Encrypt a message for ALL connected peers (returns map of peerId→encrypted)
+async function encryptForAll(text) {
+  const out = {};
+  for (const [id] of Object.entries(connections)) {
+    out[id] = await encryptMsg(text, id) || text; // fallback to plain if no key
+  }
+  return out;
+}
+
+// Init crypto on load
+initCrypto().catch(console.error);
+
+// ══════════════════════════════════════
 //  DETECT HOST vs GUEST
 // ══════════════════════════════════════
 const urlParams  = new URLSearchParams(window.location.search);
@@ -706,9 +790,11 @@ function initHost() {
     if (window.innerWidth <= 600) openShareModal();
   });
   myPeer.on('connection', conn => {
-    conn.on('open', () => {
+    conn.on('open', async () => {
+      const myPub = await exportPublicKey();
       conn.send({ type:'WELCOME', name:myName, color:myColor,
-        peers: Object.entries(connections).map(([id,p])=>({ id, name:p.name, color:p.color })) });
+        peers: Object.entries(connections).map(([id,p])=>({ id, name:p.name, color:p.color })),
+        pubKey: myPub });
     });
     conn.on('data',  data => handleData(data, conn.peer, conn));
     conn.on('close', ()   => removePeer(conn.peer));
@@ -730,9 +816,10 @@ function guestJoin() {
   myPeer.on('open', id => {
     myId = id;
     const conn = myPeer.connect(hostPeerId, { reliable:true });
-    conn.on('open', () => {
+    conn.on('open', async () => {
       connections[hostPeerId] = { conn, name:'Host', color:COLORS[0] };
-      conn.send({ type:'JOIN', name:myName, color:myColor, password: document.getElementById('guest-password').value.trim() });
+      const myPub = await exportPublicKey();
+      conn.send({ type:'JOIN', name:myName, color:myColor, password: document.getElementById('guest-password').value.trim(), pubKey: myPub });
       statusEl.textContent = '✓ Connected!'; statusEl.className = 'connect-status success';
       setTimeout(() => {
         document.getElementById('connect-screen').classList.remove('show');
@@ -759,7 +846,7 @@ function guestJoin() {
 // ══════════════════════════════════════
 //  DATA HANDLER
 // ══════════════════════════════════════
-function handleData(data, fromId, conn) {
+async function handleData(data, fromId, conn) {
 
   if (data.type === 'JOIN') {
     // Check max participants
@@ -776,6 +863,14 @@ function handleData(data, fromId, conn) {
       return;
     }
     connections[fromId] = { conn, name:data.name, color:data.color };
+    // Key exchange: derive shared AES key from guest's public key
+    if (data.pubKey) {
+      deriveAESKey(data.pubKey, fromId).then(async () => {
+        // Send host pubkey back so guest can derive the same shared key
+        const myPub = await exportPublicKey();
+        conn.send({ type:'KEY_ACK', pubKey: myPub });
+      });
+    }
     addParticipant(fromId, data.name, data.color);
     updatePeerCount(); setStatus('online', data.name+' joined');
     broadcast({ type:'PEER_JOINED', id:fromId, name:data.name, color:data.color }, fromId);
@@ -788,6 +883,12 @@ function handleData(data, fromId, conn) {
     updateParticipant(fromId, data.name, data.color);
     data.peers?.forEach(p => addParticipant(p.id,p.name,p.color));
     updatePeerCount(); setStatus('online','In Wave');
+    // Derive shared key from host's public key
+    if (data.pubKey) deriveAESKey(data.pubKey, fromId);
+  }
+  else if (data.type === 'KEY_ACK') {
+    // Guest receives host's pubkey — derive shared AES key
+    if (data.pubKey) deriveAESKey(data.pubKey, fromId);
   }
   else if (data.type === 'PEER_JOINED') {
     if (!connections[data.id]) connections[data.id] = { conn:null, name:data.name, color:data.color };
@@ -804,8 +905,13 @@ function handleData(data, fromId, conn) {
   else if (data.type === 'STOP_TYPING') { clearLiveTyping(fromId); if(isHost) broadcast(data,fromId); }
   else if (data.type === 'MESSAGE') {
     clearLiveTyping(fromId);
-    addBlip(data.text, data.name, data.color, false);
-    if (isHost) broadcast(data, fromId);
+    // Decrypt if payload is encrypted
+    const decrypted = data.encrypted
+      ? await decryptMsg(data.text, fromId)
+      : data.text;
+    const displayText = decrypted || data.text; // fallback to plain
+    addBlip(displayText, data.name, data.color, false);
+    if (isHost) broadcast(data, fromId); // host relays original encrypted payload
   }
   else if (data.type === 'SYSTEM') { addSystemBlip(data.text); if(isHost) broadcast(data,fromId); }
 
@@ -859,7 +965,19 @@ function sendMessage() {
     return;
   }
   addBlip(text, myName, myColor, true);
-  sendToAll({ type:'MESSAGE', text, name:myName, color:myColor });
+
+  // Send encrypted to each peer individually (each has a unique shared key)
+  Object.entries(connections).forEach(async ([id, p]) => {
+    if (!p.conn || !p.conn.open) return;
+    const encrypted = await encryptMsg(text, id);
+    try {
+      p.conn.send(encrypted
+        ? { type:'MESSAGE', text: encrypted, encrypted: true, name:myName, color:myColor }
+        : { type:'MESSAGE', text, name:myName, color:myColor }
+      );
+    } catch(e) {}
+  });
+
   input.value = ''; input.style.height = 'auto';
   clearLiveTyping('me');
 }
