@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — NeoWave</title>
+<meta name="description" content="NeoWave privacy policy. We collect nothing. Store nothing. Because there's nothing to collect.">
+<meta name="theme-color" content="#04080f">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+
+<!-- OG / Social Preview -->
+<meta property="og:title" content="NeoWave — Privacy Policy">
+<meta property="og:description" content="We collect nothing. Store nothing. Because there's nothing to collect.">
+<meta property="og:image" content="https://neowave.genesisvault.xyz/og-image.png">
+<meta property="og:url" content="https://neowave.genesisvault.xyz/privacy.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NeoWave by Genesis Group">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://neowave.genesisvault.xyz/og-image.png">
+
+<style>
+  :root {
+    --bg:       #04080f;
+    --surface:  #080e1a;
+    --panel:    #0c1422;
+    --border:   #1a2a40;
+    --wave:     #0077ff;
+    --wave2:    #00c8ff;
+    --wave-dim: #00336a;
+    --gold:     #f0a500;
+    --white:    #e8f0ff;
+    --gray:     #4a6080;
+    --gray2:    #2a3a50;
+    --red:      #ff4455;
+    --green:    #00e896;
+    --r: 12px;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* BG */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0,119,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,119,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .bg-orb {
+    position: fixed; pointer-events: none; z-index: 0;
+    border-radius: 50%; filter: blur(80px); opacity: 0.12;
+  }
+  .bg-orb-1 { width:500px; height:500px; background:var(--wave); top:-150px; left:-150px; }
+  .bg-orb-2 { width:350px; height:350px; background:var(--wave2); bottom:-100px; right:-100px; }
+
+  /* NAV */
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; padding:0 5%; height:64px;
+    border-bottom:1px solid rgba(26,42,64,0.6);
+    background:rgba(4,8,15,0.9); backdrop-filter:blur(16px);
+  }
+  .nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .nav-logo-icon {
+    width:34px; height:34px; border-radius:9px;
+    background:linear-gradient(135deg,var(--wave),var(--wave2));
+    display:flex; align-items:center; justify-content:center; font-size:17px;
+    box-shadow:0 0 16px rgba(0,119,255,0.4);
+  }
+  .nav-logo-text {
+    font-size:20px; font-weight:800; letter-spacing:-0.02em;
+    background:linear-gradient(90deg,var(--wave2),var(--wave));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .nav-spacer { flex:1; }
+  .nav-back {
+    padding:8px 18px;
+    border:1px solid var(--border); border-radius:10px;
+    color:var(--gray); font-family:'Syne',sans-serif; font-size:13px; font-weight:600;
+    text-decoration:none; transition:all 0.2s;
+    display:flex; align-items:center; gap:6px;
+  }
+  .nav-back:hover { border-color:var(--wave-dim); color:var(--white); }
+
+  /* MAIN */
+  main {
+    position:relative; z-index:1;
+    max-width:760px; margin:0 auto;
+    padding:100px 24px 80px;
+  }
+
+  /* HEADER */
+  .page-header { margin-bottom:52px; }
+  .page-eyebrow {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:5px 14px; border:1px solid rgba(0,119,255,0.25);
+    border-radius:20px; background:rgba(0,119,255,0.06);
+    font-family:'Syne Mono',monospace; font-size:11px;
+    color:var(--wave2); letter-spacing:0.12em; margin-bottom:20px;
+  }
+  .page-eyebrow-dot { width:6px; height:6px; border-radius:50%; background:var(--wave2); }
+  .page-title {
+    font-size:clamp(36px,7vw,58px); font-weight:800;
+    letter-spacing:-0.03em; line-height:1.05; margin-bottom:16px;
+  }
+  .page-title span {
+    background:linear-gradient(90deg,var(--wave2),var(--wave));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .page-meta {
+    font-family:'Syne Mono',monospace; font-size:12px;
+    color:var(--gray); letter-spacing:0.08em;
+  }
+
+  /* TLDR CARD */
+  .tldr {
+    background:rgba(0,232,150,0.05);
+    border:1px solid rgba(0,232,150,0.2);
+    border-radius:var(--r); padding:24px 28px; margin-bottom:48px;
+  }
+  .tldr-label {
+    font-family:'Syne Mono',monospace; font-size:10px;
+    color:var(--green); letter-spacing:0.2em; margin-bottom:12px;
+  }
+  .tldr-title {
+    font-size:22px; font-weight:800; color:var(--white); margin-bottom:12px;
+  }
+  .tldr-list { display:flex; flex-direction:column; gap:9px; }
+  .tldr-item {
+    display:flex; align-items:flex-start; gap:10px;
+    font-size:14px; color:var(--white); line-height:1.5;
+  }
+  .tldr-check {
+    color:var(--green); font-size:14px; flex-shrink:0; margin-top:1px;
+  }
+
+  /* SECTIONS */
+  .section { margin-bottom:44px; }
+  .section-num {
+    font-family:'Syne Mono',monospace; font-size:10px;
+    color:var(--wave-dim); letter-spacing:0.2em; margin-bottom:8px;
+  }
+  .section-title {
+    font-size:20px; font-weight:700; color:var(--white);
+    margin-bottom:16px; display:flex; align-items:center; gap:10px;
+  }
+  .section-icon {
+    width:34px; height:34px; border-radius:9px;
+    display:flex; align-items:center; justify-content:center; font-size:16px;
+    background:var(--panel); border:1px solid var(--border); flex-shrink:0;
+  }
+  .section-body {
+    font-size:15px; color:var(--gray); line-height:1.75;
+  }
+  .section-body p { margin-bottom:12px; }
+  .section-body p:last-child { margin-bottom:0; }
+  .section-body strong { color:var(--white); font-weight:600; }
+
+  /* DIVIDER */
+  .divider {
+    height:1px; background:var(--border); margin:0 0 44px;
+    opacity:0.5;
+  }
+
+  /* STAT CARDS */
+  .stat-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:12px; margin-top:20px;
+  }
+  .stat-card {
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:var(--r); padding:18px;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .stat-label {
+    font-family:'Syne Mono',monospace; font-size:10px;
+    color:var(--gray); letter-spacing:0.15em; text-transform:uppercase;
+  }
+  .stat-value { font-size:18px; font-weight:700; color:var(--white); }
+  .stat-sub { font-size:12px; color:var(--gray); }
+
+  /* CONTACT */
+  .contact-card {
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:var(--r); padding:24px 28px; margin-top:20px;
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  }
+  .contact-icon { font-size:28px; }
+  .contact-body { flex:1; }
+  .contact-title { font-size:15px; font-weight:700; color:var(--white); margin-bottom:4px; }
+  .contact-text { font-size:13px; color:var(--gray); }
+  .contact-text a { color:var(--wave2); text-decoration:none; }
+  .contact-text a:hover { text-decoration:underline; }
+
+  /* FOOTER */
+  footer {
+    position:relative; z-index:1;
+    border-top:1px solid var(--border);
+    padding:28px 5%; text-align:center;
+    font-family:'Syne Mono',monospace; font-size:11px;
+    color:var(--gray); letter-spacing:0.1em;
+  }
+  footer a { color:var(--wave2); text-decoration:none; margin:0 10px; }
+
+  @media (max-width:600px) {
+    main { padding:90px 18px 60px; }
+    .tldr { padding:18px; }
+    .contact-card { padding:18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon">🌊</div>
+    <div class="nav-logo-text">NeoWave</div>
+  </a>
+  <div class="nav-spacer"></div>
+  <a class="nav-back" href="index.html">← Back to Home</a>
+</nav>
+
+<main>
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="page-eyebrow">
+      <div class="page-eyebrow-dot"></div>
+      LEGAL · PRIVACY
+    </div>
+    <h1 class="page-title">Privacy <span>Policy</span></h1>
+    <div class="page-meta">Last updated: June 7, 2026 · By Genesis Group</div>
+  </div>
+
+  <!-- TLDR -->
+  <div class="tldr">
+    <div class="tldr-label">// TL;DR — THE SHORT VERSION</div>
+    <div class="tldr-title">We collect absolutely nothing.</div>
+    <div class="tldr-list">
+      <div class="tldr-item"><span class="tldr-check">✓</span> No account required. No name, email, or phone number collected.</div>
+      <div class="tldr-item"><span class="tldr-check">✓</span> No messages stored. Everything is peer-to-peer and disappears when the Wave closes.</div>
+      <div class="tldr-item"><span class="tldr-check">✓</span> No tracking, no analytics, no cookies, no fingerprinting.</div>
+      <div class="tldr-item"><span class="tldr-check">✓</span> No files stored on any server. Transfers go directly device-to-device.</div>
+      <div class="tldr-item"><span class="tldr-check">✓</span> Nothing to sell. Nothing to subpoena. Nothing to leak.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="section">
+    <div class="section-num">// 01</div>
+    <div class="section-title">
+      <div class="section-icon">🌊</div>
+      What NeoWave Is
+    </div>
+    <div class="section-body">
+      <p>NeoWave is a browser-based, peer-to-peer encrypted messenger built by Genesis Group. It uses WebRTC technology to establish direct, encrypted connections between devices — with no central server handling your communications.</p>
+      <p>NeoWave is hosted on GitHub Pages as a static website. There is <strong>no backend server</strong> that processes, stores, or logs your conversations.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 2 -->
+  <div class="section">
+    <div class="section-num">// 02</div>
+    <div class="section-title">
+      <div class="section-icon">📋</div>
+      What Data We Collect
+    </div>
+    <div class="section-body">
+      <p>None. NeoWave does not collect, process, or store any personal data.</p>
+      <p>Specifically, we do <strong>not</strong> collect:</p>
+      <p>Your name, display name, IP address, device information, browser type, message content, files you transfer, Wave IDs you generate or join, timestamps of your sessions, or any behavioral or usage analytics.</p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Personal Data</div>
+        <div class="stat-value" style="color:var(--green)">Zero</div>
+        <div class="stat-sub">Collected or stored</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Message Logs</div>
+        <div class="stat-value" style="color:var(--green)">Zero</div>
+        <div class="stat-sub">On any server</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Cookies</div>
+        <div class="stat-value" style="color:var(--green)">Zero</div>
+        <div class="stat-sub">Tracking or otherwise</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Analytics</div>
+        <div class="stat-value" style="color:var(--green)">Zero</div>
+        <div class="stat-sub">No third-party trackers</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 3 -->
+  <div class="section">
+    <div class="section-num">// 03</div>
+    <div class="section-title">
+      <div class="section-icon">🔒</div>
+      How Encryption Works
+    </div>
+    <div class="section-body">
+      <p>All connections on NeoWave use <strong>WebRTC DTLS encryption</strong> — the same standard used in modern video calling applications. This encryption is applied automatically by your browser.</p>
+      <p>Messages and files travel <strong>directly between devices</strong>. The only component that sees a Wave ID is the PeerJS signaling server, which is used solely to establish the initial connection. Once connected, all data flows peer-to-peer and the signaling server is completely out of the picture.</p>
+      <p>The signaling server <strong>never sees</strong> the content of your messages or files — only the Wave ID used to locate your peer.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 4 -->
+  <div class="section">
+    <div class="section-num">// 04</div>
+    <div class="section-title">
+      <div class="section-icon">🌐</div>
+      Third-Party Services
+    </div>
+    <div class="section-body">
+      <p>NeoWave uses a small number of standard infrastructure services to function — specifically a <strong>WebRTC signaling service</strong> to establish peer connections, and a <strong>font and script delivery network</strong> for the interface. These services handle only the technical handshake needed to connect devices.</p>
+      <p>None of these services have access to your message content, file transfers, or any personal information. Only the temporary Wave ID used to locate your peer is involved in the connection process.</p>
+      <p>We do <strong>not</strong> use any analytics, advertising, behavioral tracking, or data monetization services of any kind.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 5 -->
+  <div class="section">
+    <div class="section-num">// 05</div>
+    <div class="section-title">
+      <div class="section-icon">⚡</div>
+      Data Retention
+    </div>
+    <div class="section-body">
+      <p>When a Wave session ends — when all participants leave or close their browser tab — the session is gone permanently. There is no message history, no chat log, no file cache on any server.</p>
+      <p>Your browser may temporarily cache static assets (HTML, CSS, JS) via the service worker for offline support. This data never leaves your device and can be cleared at any time through your browser settings.</p>
+      <p><strong>We retain nothing. There is nothing to delete, request, or export.</strong></p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 6 -->
+  <div class="section">
+    <div class="section-num">// 06</div>
+    <div class="section-title">
+      <div class="section-icon">👤</div>
+      Your Rights
+    </div>
+    <div class="section-body">
+      <p>Because we collect no personal data, there is nothing to access, correct, delete, or port under GDPR, CCPA, or any other privacy regulation.</p>
+      <p>You have the right to use NeoWave completely anonymously. No account, no email, no verification of any kind is required — ever.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 7 -->
+  <div class="section">
+    <div class="section-num">// 07</div>
+    <div class="section-title">
+      <div class="section-icon">📬</div>
+      Contact
+    </div>
+    <div class="section-body">
+      <p>Questions about this policy or NeoWave in general:</p>
+    </div>
+    <div class="contact-card">
+      <div class="contact-icon">🌊</div>
+      <div class="contact-body">
+        <div class="contact-title">Genesis Group</div>
+        <div class="contact-text">
+          Built with care for privacy.<br>
+          Visit <a href="https://genesisvault.xyz" target="_blank">genesisvault.xyz</a> to learn more about what we build.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div>NEOWAVE · <span>PRIVATE P2P MESSENGER</span> · BY GENESIS GROUP</div>
+  <div style="margin-top:10px">
+    <a href="index.html">Home</a>
+    <a href="app.html">Launch App</a>
+    <a href="privacy.html">Privacy</a>
+  </div>
+</footer>
+
+</body>
+</html>
