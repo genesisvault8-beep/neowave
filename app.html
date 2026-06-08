@@ -503,6 +503,120 @@
     .input-area { padding:10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
     .blips { padding:12px; }
   }
+
+  /* ── PRO BADGE ── */
+  .pro-badge {
+    display:inline-flex; align-items:center; gap:5px; padding:3px 9px;
+    background:linear-gradient(135deg,rgba(240,165,0,0.15),rgba(240,165,0,0.05));
+    border:1px solid rgba(240,165,0,0.4); border-radius:20px;
+    font-family:'Syne Mono',monospace; font-size:9px; color:var(--gold);
+    letter-spacing:0.1em; cursor:pointer; transition:all 0.2s;
+  }
+  .pro-badge:hover { background:rgba(240,165,0,0.2); border-color:var(--gold); }
+  .pro-badge-dot { width:5px; height:5px; border-radius:50%; background:var(--gold); box-shadow:0 0 5px var(--gold); }
+
+  /* ── PRO MODAL ── */
+  #pro-modal {
+    display:none; position:fixed; inset:0; background:rgba(4,8,15,0.93);
+    z-index:400; align-items:flex-start; justify-content:center;
+    backdrop-filter:blur(10px); padding-top:8vh; overflow-y:auto;
+  }
+  #pro-modal.show { display:flex; }
+  .pro-card {
+    background:var(--surface); border:1px solid rgba(240,165,0,0.3);
+    border-radius:20px; padding:32px 24px; max-width:360px; width:92%;
+    box-shadow:0 0 60px rgba(240,165,0,0.1); position:relative;
+  }
+  .pro-glow {
+    position:absolute; top:-1px; left:10%; right:10%; height:2px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    border-radius:2px;
+  }
+  .pro-icon { font-size:42px; text-align:center; margin-bottom:10px; }
+  .pro-title { font-size:22px; font-weight:800; text-align:center; margin-bottom:4px; }
+  .pro-title span { background:linear-gradient(90deg,var(--gold),#ffcc44); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .pro-sub { font-size:13px; color:var(--gray); text-align:center; margin-bottom:20px; line-height:1.5; }
+
+  .pro-features { display:flex; flex-direction:column; gap:8px; margin-bottom:22px; }
+  .pro-feat {
+    display:flex; align-items:flex-start; gap:10px; padding:10px 12px;
+    background:rgba(240,165,0,0.05); border:1px solid rgba(240,165,0,0.12);
+    border-radius:10px;
+  }
+  .pro-feat-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+  .pro-feat-text { font-size:12px; color:var(--white); line-height:1.4; }
+  .pro-feat-text strong { color:var(--gold); display:block; margin-bottom:2px; font-size:13px; }
+
+  .pro-divider { border:none; border-top:1px solid var(--border); margin:18px 0; }
+
+  .pro-activate-label {
+    font-size:11px; color:var(--gray); letter-spacing:0.12em;
+    font-family:'Syne Mono',monospace; margin-bottom:8px; text-transform:uppercase;
+  }
+  .pro-key-input {
+    width:100%; background:var(--panel); border:1px solid var(--border);
+    border-radius:10px; padding:11px 14px; color:var(--wave2);
+    font-family:'Syne Mono',monospace; font-size:13px; outline:none;
+    letter-spacing:0.08em; margin-bottom:10px; transition:border-color 0.2s;
+    text-transform:uppercase;
+  }
+  .pro-key-input:focus { border-color:var(--gold); }
+  .pro-key-input::placeholder { color:var(--gray2); text-transform:none; letter-spacing:0; }
+  .pro-activate-btn {
+    width:100%; padding:12px; border:none; border-radius:10px;
+    background:linear-gradient(135deg,var(--gold),#cc8800);
+    color:#0a0600; font-family:'Syne',sans-serif; font-size:14px;
+    font-weight:800; cursor:pointer; transition:all 0.2s; letter-spacing:0.03em;
+    margin-bottom:8px;
+  }
+  .pro-activate-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(240,165,0,0.35); }
+  .pro-status { font-family:'Syne Mono',monospace; font-size:12px; text-align:center; min-height:16px; margin-bottom:8px; }
+  .pro-status.success { color:var(--green); }
+  .pro-status.error   { color:var(--red); }
+
+  .pro-get-link {
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    width:100%; padding:11px; border:1px solid rgba(240,165,0,0.3);
+    border-radius:10px; background:transparent; color:var(--gold);
+    font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+    cursor:pointer; text-decoration:none; transition:all 0.2s; margin-bottom:8px;
+  }
+  .pro-get-link:hover { background:rgba(240,165,0,0.08); border-color:var(--gold); }
+  .pro-dismiss { font-size:12px; color:var(--gray); cursor:pointer; text-align:center; display:block; }
+  .pro-dismiss:hover { color:var(--white); }
+
+  /* ── PRO ACTIVE STATE in sidebar ── */
+  .pro-active-banner {
+    display:none; align-items:center; gap:8px; padding:8px 12px;
+    background:rgba(240,165,0,0.08); border:1px solid rgba(240,165,0,0.2);
+    border-radius:10px; margin-top:8px;
+  }
+  .pro-active-banner.show { display:flex; }
+  .pro-active-icon { font-size:16px; }
+  .pro-active-text { font-size:11px; color:var(--gold); font-family:'Syne Mono',monospace; }
+
+  /* ── WAVE COLOR PICKER ── */
+  .wave-color-section { padding:12px 16px; border-bottom:1px solid var(--border); }
+  .wave-color-label {
+    font-size:10px; letter-spacing:0.15em; text-transform:uppercase;
+    color:var(--gray); margin-bottom:9px; font-family:'Syne Mono',monospace;
+  }
+  .wave-color-swatches { display:flex; gap:7px; flex-wrap:wrap; }
+  .wave-swatch {
+    width:26px; height:26px; border-radius:50%; cursor:pointer;
+    border:2px solid transparent; transition:all 0.2s; flex-shrink:0;
+  }
+  .wave-swatch:hover { transform:scale(1.15); }
+  .wave-swatch.active { border-color:var(--white); box-shadow:0 0 8px rgba(255,255,255,0.4); transform:scale(1.15); }
+
+  /* ── FREE TIER LIMIT WARNING ── */
+  .limit-banner {
+    display:none; align-items:center; gap:8px; padding:7px 14px;
+    background:rgba(255,68,85,0.08); border-top:1px solid rgba(255,68,85,0.2);
+    font-size:11px; color:var(--red); font-family:'Syne Mono',monospace;
+    cursor:pointer; flex-shrink:0; letter-spacing:0.04em;
+  }
+  .limit-banner.show { display:flex; }
 </style>
 </head>
 <body>
@@ -519,12 +633,13 @@
     <input class="name-input" id="host-name-input" type="text" placeholder="Your name..." maxlength="20" />
 
     <div class="section-label" style="text-align:left;font-size:11px;color:var(--gray);letter-spacing:2px;margin:12px 0 6px;">MAX PARTICIPANTS</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px;">
       <button class="max-btn active" onclick="selectMax(this,2)">2</button>
-      <button class="max-btn" onclick="selectMax(this,5)">5</button>
-      <button class="max-btn" onclick="selectMax(this,10)">10</button>
-      <button class="max-btn" onclick="selectMax(this,0)">∞</button>
+      <button class="max-btn" onclick="selectMax(this,5)" id="max-btn-5">5</button>
+      <button class="max-btn" onclick="selectMax(this,10)" id="max-btn-10">10</button>
+      <button class="max-btn" onclick="selectMax(this,0)" id="max-btn-inf">∞</button>
     </div>
+    <div id="max-free-note" style="font-size:11px;color:var(--gold);font-family:'Syne Mono',monospace;margin-bottom:10px;text-align:center;cursor:pointer;" onclick="openProModal()">🌊 5, 10, ∞ require Pro →</div>
 
     <div class="section-label" style="text-align:left;font-size:11px;color:var(--gray);letter-spacing:2px;margin-bottom:6px;">PASSWORD <span style="color:var(--gray2);font-size:10px;">(optional)</span></div>
     <input class="name-input" id="host-password-input" type="password" placeholder="Leave empty for no password..." maxlength="32" style="margin-bottom:16px;" />
@@ -543,6 +658,56 @@
     <button class="share-copy-btn" id="share-copy-btn" onclick="shareModalCopy()">🔗 Copy Invite Link</button>
     <button class="share-whatsapp-btn" onclick="shareWhatsApp()">📲 Share via WhatsApp</button>
     <span class="share-dismiss" onclick="closeShareModal()">I'll share it later →</span>
+  </div>
+</div>
+
+<!-- PRO MODAL -->
+<div id="pro-modal">
+  <div class="pro-card">
+    <div class="pro-glow"></div>
+    <div class="pro-icon">🌊</div>
+    <div class="pro-title">NeoWave <span>Pro</span></div>
+    <div class="pro-sub">Unlock the full Wave. No subscriptions — one key, forever.</div>
+
+    <div class="pro-features">
+      <div class="pro-feat">
+        <div class="pro-feat-icon">⏱️</div>
+        <div class="pro-feat-text">
+          <strong>Unlimited Session Time</strong>
+          Free: 2-hour max · Pro: waves stay open as long as you need
+        </div>
+      </div>
+      <div class="pro-feat">
+        <div class="pro-feat-icon">📁</div>
+        <div class="pro-feat-text">
+          <strong>Large File Transfers</strong>
+          Free: 10MB cap · Pro: up to 100MB per file
+        </div>
+      </div>
+      <div class="pro-feat">
+        <div class="pro-feat-icon">👥</div>
+        <div class="pro-feat-text">
+          <strong>Full Participant Control</strong>
+          Free: max 2 people · Pro: 2, 5, 10, or unlimited
+        </div>
+      </div>
+      <div class="pro-feat">
+        <div class="pro-feat-icon">🔑</div>
+        <div class="pro-feat-text">
+          <strong>One-time License Key</strong>
+          Pay once on Gumroad · activate on any browser · never expires
+        </div>
+      </div>
+    </div>
+
+    <hr class="pro-divider">
+
+    <div class="pro-activate-label">Already have a key?</div>
+    <input class="pro-key-input" id="pro-key-input" type="text" placeholder="NW-XXXX-XXXX-XXXX-XXXX" maxlength="24" />
+    <div class="pro-status" id="pro-status"></div>
+    <button class="pro-activate-btn" onclick="activateLicense()">🌊 Activate Pro</button>
+    <a class="pro-get-link" href="https://neowave.genesisvault.xyz/buy.html" target="_blank" rel="noopener">🛒 Get a License Key →</a>
+    <span class="pro-dismiss" onclick="closeProModal()">Maybe later</span>
   </div>
 </div>
 
@@ -579,10 +744,19 @@
   </div>
   <div class="topbar-spacer"></div>
   <div class="enc-badge"><div class="enc-dot"></div> P2P ENCRYPTED</div>
+  <div class="pro-badge" id="pro-topbar-badge" onclick="openProModal()" title="Upgrade to Pro">
+    <div class="pro-badge-dot"></div>
+    <span id="pro-badge-label">PRO</span>
+  </div>
   <div class="status-pill">
     <div class="status-dot" id="status-dot"></div>
     <span id="status-text">Initializing...</span>
   </div>
+</div>
+
+<!-- FREE TIER LIMIT BANNER -->
+<div class="limit-banner" id="limit-banner" onclick="openProModal()">
+  ⚠️ <span id="limit-banner-text">Free tier limit reached — upgrade to Pro to unlock</span> →
 </div>
 
 <!-- MAIN -->
@@ -607,6 +781,23 @@
         <div class="pstat"><span class="pstat-icon">📁</span><span>Files: <strong>P2P direct</strong></span></div>
         <div class="pstat"><span class="pstat-icon">🗄️</span><span>Server storage: <strong>None</strong></span></div>
         <div class="pstat"><span class="pstat-icon">👁️</span><span>Surveillance: <strong>Zero</strong></span></div>
+      </div>
+      <div class="pro-active-banner" id="pro-active-banner">
+        <div class="pro-active-icon">🌊</div>
+        <div class="pro-active-text">PRO ACTIVE — All limits unlocked</div>
+      </div>
+    </div>
+    <!-- WAVE COLOR PICKER -->
+    <div class="wave-color-section">
+      <div class="wave-color-label">Wave Color</div>
+      <div class="wave-color-swatches" id="wave-color-swatches">
+        <div class="wave-swatch" data-wave="#0077ff" data-wave2="#00c8ff" style="background:linear-gradient(135deg,#0077ff,#00c8ff)" title="Ocean (default)"></div>
+        <div class="wave-swatch" data-wave="#7c3aed" data-wave2="#a78bfa" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)" title="Violet"></div>
+        <div class="wave-swatch" data-wave="#059669" data-wave2="#34d399" style="background:linear-gradient(135deg,#059669,#34d399)" title="Emerald"></div>
+        <div class="wave-swatch" data-wave="#dc2626" data-wave2="#f87171" style="background:linear-gradient(135deg,#dc2626,#f87171)" title="Crimson"></div>
+        <div class="wave-swatch" data-wave="#d97706" data-wave2="#fbbf24" style="background:linear-gradient(135deg,#d97706,#fbbf24)" title="Amber"></div>
+        <div class="wave-swatch" data-wave="#db2777" data-wave2="#f472b6" style="background:linear-gradient(135deg,#db2777,#f472b6)" title="Rose"></div>
+        <div class="wave-swatch" data-wave="#0891b2" data-wave2="#22d3ee" style="background:linear-gradient(135deg,#0891b2,#22d3ee)" title="Cyan"></div>
       </div>
     </div>
     <div class="sidebar-section" style="padding-bottom:8px">
@@ -694,6 +885,7 @@ function hostStart() {
   wavePassword = p;
   document.getElementById('host-name-modal').classList.remove('show');
   initHost();
+  startFreeSessionTimer();
 }
 document.getElementById('host-name-input')?.addEventListener('keydown', e => {
   if (e.key === 'Enter') hostStart();
@@ -901,7 +1093,8 @@ function onKeyDown(e) {
 function handleFileSelect(e) {
   const file = e.target.files[0];
   if (!file) return;
-  if (file.size > 50 * 1024 * 1024) { showToast('Max file size is 50MB','error'); return; }
+  if (file.size > 100 * 1024 * 1024) { showToast('Max file size is 100MB','error'); return; }
+  if (!checkFileSizeLimit(file)) { e.target.value = ''; return; }
   if (Object.keys(connections).length === 0) { showToast('No one connected yet!','error'); return; }
   sendFile(file);
   e.target.value = '';
@@ -1258,12 +1451,180 @@ function showToast(msg, type) {
 }
 document.getElementById('message-input')?.focus();
 
+// ══════════════════════════════════════
+//  LICENSE / PRO SYSTEM
+// ══════════════════════════════════════
+
+// SHA-256 hashes of valid license keys (keys never stored in app)
+const VALID_KEY_HASHES = ["e9a43262dab9788ffa3dcf7fc63862b53095a9443303b18c5722b6742b5c225b","2150118afb65d896db5e307b227bfb568b917196e4066b5a413e3e37560b4daa","81b3498ff901965b5e2fe7d9c1957e4ee9b3bfaf8e193bf555f09d9c5bf74efd","108861d2e3401d696fe2f40c00cddc3731fe53c71c2c8b5e82227b493df195b6","b3cddb2a3ec42e73a714f5f78f9d4129ad2880aab2cfb40a1424971995b8dba3","db434e08bec3ad698a8bb70640f634f72ac97257ec5efee6489ceef59814c6f7","63f17ffa8bc548298b322675b6726a989901f27c55da24371c093fca4fa83bea","d8fc566c440cc535f7ca918b2980f041521c9cdfe7d85763a99a52b09bef0e57","37495523760a1c513f8390d845403f31ce50dac02324cb2c9f1e26e8fc04bd8c","fcd2ffc09eaeee034470a9558c0a0627569236c61a1d7c29b81ade095cb659dd","126a9a952c510c0c110a0b47e026dc5ac44c909f0375c95949fac93bcb595c26","2e98387541cad86360566b113ede3f45d7eda9b7b8d1f6ba846bad50691ed833","2e563a3cdd17408a6bb5b7b6408858fdea0e0131e6c4cbbeb382f7cda1118f78","f010ba3e746b5b0cb51f8ddd544397a03ba482274d54fb54bee0c870c7fdd5be","edd4dcf02cc89a2b3368bd3bb268c0386a7de1e028593949dcd7cc47167694eb","d5142a246b5baec0f79cf305be4e3b4b98008f8712f82552d66bd4cffe296a4a","7a528fc64c7a229df31146747f5243e685df69057bc04a2a3c4706ae551dd498","a8438a34a45a094f7bd6799310a5ba0e0181a73738dae7d94c3a94d59b3b5b56","f26f8f38ca6ec5655677eaa994dd8886bde78e7e0da00297790b025f05cf22cb","49e82a874243c66cdb40797100b4482a7a31eb9a96219e3fda6e98327aa9db71","b73f5d554936aae115f31b836a398c7cc13455a84ec74f9d408e39bd14a1deaf","878f2653d2513dae8c276604070c213b0e9c4045a92a03daa41ac2978f088635","2ba7bdfa745595985b41929c8d6cf61338c2e73bd947cd4866196e585fe40b61","602d134ad7bc98ecade15d200cd5d4114c8ddc8f2505e620418d75a62c08e17e","ac4687a8c278fbc6ab76b1764b7efe997a4c62a5dd1e52bbd467cb7a93851d5d","bf205be34158c1f524d9e69ea0a2c2e7118f2c5304f46410bd6c0845ddea03d1","c0988aa315ed3f4c03c8806885a56f6b11d56bf10526952d44a92c45b5e0399c","160b86f5783bfb5de8a34c2b6727dc3615eff7015c3a9e4509470b45e9a6a0da","f7b5377d741194fa6de1c840f4e9c32e839e42ebb5c969fd58ece9836489918d","928a0e9abdf669b65adde4178db978c6164991d43b921ee4c25c0f16cb0ecfa7","382fd1c9066dfc1c9e1efc1c73eb3788d143927005a6a98afcf2642a8fc0a973","38a229279e406b2d8fdb621d185031a23ea3ea5e93f532100bdad7d3a16601f9","c2d8ebc9756cff4c4bba4b3d00135954f209596d0dc069e94d06576431b4b457","e08b0e86ed7642f7989a71c75381335ca98a66fc5d9448128928f2667e260c8e","9d1686566325bba157a2e7bb4d305635bb5340f5cd3e0fb0ad8c86e50e793ada","25596fcc94e8abef951951068e0605b52c0996d38cee3fcf56c41b09bfcc7894","28b776793d357bc1446afc0fc6f90b52b90f19761280095c91dd6338d3585f26","cda16bf27640df37c22cc3b7c01102c073a1d916518ea7f59e5cfb06083e8342","c5f3235fc2aacfb82bb9974938b34579a69192a5626e86a6ff3f8b198eedb82c","5a88904f7b9e6c180a2aac3add5f868981d1f74aeb10bb012b7c33712a3e84fb","2444b2aadaf931b13bc0425659bc5cfa903a8643b923a95356ed16211ce84232","a7b36690e1cf72a3827565665ca1f4fc317597997b393b23ad28e8987254eee7","7686570ecfe4f6c3f2936e47001a3d188200fba9c2fd7ef9a0c768ebe56fda00","8ce2bd2f6eca6e6937443a19ddbc41f8c82a00bbc24fe1b0ad998da9c853bda7","95b511b2a41beaff3cf071d224205a12b6f10f9ba6faab694e173da7e1d8a883","0a6c71cd198185362835162130b29a9f9aab573dcb48b0d11f9348246a71d388","cff917250f17ad1bd207c08095b34cd52eadd450b0047f60984bb004a954987d","9a5926800b8318c1bb19573a9005ab857be1f565a29334e2025d5aba2ef428bf","ef5ce3b534dad4232380d43048c890623866171ad635c6879d7fd238a51db209","73f8e02e50ee7976efe2099771741f43ac8a760aa2a78355b46f9ea665ccca23"];
+
+// FREE TIER LIMITS
+const FREE_FILE_LIMIT_MB = 10;
+const FREE_SESSION_MINUTES = 120;
+
+let isPro = false;
+let sessionTimer = null;
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkStoredLicense() {
+  const stored = localStorage.getItem('nw_license');
+  if (!stored) return;
+  const hash = await sha256(stored);
+  if (VALID_KEY_HASHES.includes(hash)) {
+    activatePro(false);
+  }
+}
+
+async function activateLicense() {
+  const input = document.getElementById('pro-key-input');
+  const statusEl = document.getElementById('pro-status');
+  const key = input.value.trim().toUpperCase();
+  if (!key) { statusEl.textContent = 'Enter your license key'; statusEl.className = 'pro-status error'; return; }
+  statusEl.textContent = 'Validating...'; statusEl.className = 'pro-status';
+  const hash = await sha256(key);
+  if (VALID_KEY_HASHES.includes(hash)) {
+    localStorage.setItem('nw_license', key);
+    statusEl.textContent = '✓ Pro activated!'; statusEl.className = 'pro-status success';
+    activatePro(true);
+    setTimeout(closeProModal, 1200);
+  } else {
+    statusEl.textContent = '✗ Invalid key. Check and try again.'; statusEl.className = 'pro-status error';
+  }
+}
+
+function activatePro(showToastMsg) {
+  isPro = true;
+  // Update badge
+  document.getElementById('pro-badge-label').textContent = 'PRO 🌊';
+  document.getElementById('pro-topbar-badge').style.background = 'linear-gradient(135deg,rgba(240,165,0,0.25),rgba(240,165,0,0.1))';
+  document.getElementById('pro-topbar-badge').style.borderColor = 'rgba(240,165,0,0.7)';
+  // Show pro banner in sidebar
+  document.getElementById('pro-active-banner').classList.add('show');
+  // Unlock participant options
+  document.getElementById('max-free-note').style.display = 'none';
+  // Cancel session timer if running
+  if (sessionTimer) { clearTimeout(sessionTimer); sessionTimer = null; }
+  // Hide limit banner
+  document.getElementById('limit-banner').classList.remove('show');
+  if (showToastMsg) showToast('⚡ NeoWave Pro activated!', 'success');
+}
+
+function openProModal() { document.getElementById('pro-modal').classList.add('show'); }
+function closeProModal() { document.getElementById('pro-modal').classList.remove('show'); }
+
+// Format key input automatically
+document.getElementById('pro-key-input')?.addEventListener('input', function() {
+  let v = this.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
+  // Insert dashes: NW-XXXX-XXXX-XXXX-XXXX
+  let parts = [];
+  if (v.startsWith('NW')) { parts.push('NW'); v = v.slice(2); }
+  while (v.length > 0) { parts.push(v.slice(0,4)); v = v.slice(4); }
+  this.value = parts.join('-').slice(0,24);
+});
+document.getElementById('pro-key-input')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') activateLicense();
+});
+
+// Free tier: lock participant options > 2
+function selectMax(el, val) {
+  if (!isPro && val !== 2) {
+    openProModal();
+    return;
+  }
+  document.querySelectorAll('.max-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  maxPeers = val;
+}
+
+// Free tier: session timer (2hr)
+function startFreeSessionTimer() {
+  if (isPro) return;
+  sessionTimer = setTimeout(() => {
+    if (isPro) return;
+    showLimitBanner('Free session (2hr) ended — upgrade to keep the Wave open');
+    showToast('⏱ Free session ended. Upgrade to Pro.', 'error');
+    // Disconnect all peers gracefully
+    Object.values(connections).forEach(p => { try { p.conn?.close(); } catch(e){} });
+  }, FREE_SESSION_MINUTES * 60 * 1000);
+}
+
+// Free tier: file size check
+function checkFileSizeLimit(file) {
+  if (isPro) return true;
+  if (file.size > FREE_FILE_LIMIT_MB * 1024 * 1024) {
+    showLimitBanner(`Files over ${FREE_FILE_LIMIT_MB}MB require Pro`);
+    openProModal();
+    return false;
+  }
+  return true;
+}
+
+function showLimitBanner(text) {
+  const b = document.getElementById('limit-banner');
+  document.getElementById('limit-banner-text').textContent = text;
+  b.classList.add('show');
+}
+
 // Register service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   });
 }
+
+// ══════════════════════════════════════
+//  WAVE COLOR SYSTEM (persistent)
+// ══════════════════════════════════════
+const WAVE_COLORS = [
+  { wave:'#0077ff', wave2:'#00c8ff' },
+  { wave:'#7c3aed', wave2:'#a78bfa' },
+  { wave:'#059669', wave2:'#34d399' },
+  { wave:'#dc2626', wave2:'#f87171' },
+  { wave:'#d97706', wave2:'#fbbf24' },
+  { wave:'#db2777', wave2:'#f472b6' },
+  { wave:'#0891b2', wave2:'#22d3ee' },
+];
+
+function applyWaveColor(wave, wave2, save) {
+  const root = document.documentElement;
+  // derive a dim version (50% opacity equivalent via hex)
+  const dimHex = wave.replace('#','');
+  const r = parseInt(dimHex.slice(0,2),16);
+  const g = parseInt(dimHex.slice(2,4),16);
+  const b = parseInt(dimHex.slice(4,6),16);
+  root.style.setProperty('--wave', wave);
+  root.style.setProperty('--wave2', wave2);
+  root.style.setProperty('--wave-dim', `rgba(${r},${g},${b},0.4)`);
+  // mark active swatch
+  document.querySelectorAll('.wave-swatch').forEach(s => {
+    s.classList.toggle('active', s.dataset.wave === wave);
+  });
+  if (save) localStorage.setItem('nw_wave_color', JSON.stringify({ wave, wave2 }));
+}
+
+function initWaveColor() {
+  const stored = localStorage.getItem('nw_wave_color');
+  let wave = '#0077ff', wave2 = '#00c8ff';
+  if (stored) {
+    try { const p = JSON.parse(stored); wave = p.wave; wave2 = p.wave2; } catch(e) {}
+  }
+  applyWaveColor(wave, wave2, false);
+  document.querySelectorAll('.wave-swatch').forEach(s => {
+    s.addEventListener('click', () => {
+      applyWaveColor(s.dataset.wave, s.dataset.wave2, true);
+      showToast('🌊 Wave color updated!', 'success');
+    });
+  });
+}
+
+// Init on load
+checkStoredLicense();
+initWaveColor();
+
 </script>
 </body>
 </html>
