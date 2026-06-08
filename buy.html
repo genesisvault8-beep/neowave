@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeoWave Pro — Get Your License</title>
+<meta name="description" content="Upgrade to NeoWave Pro. One-time $5. No subscription. Pure private P2P messaging unlocked.">
+<meta name="theme-color" content="#04080f">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --bg:      #04080f;
+    --surface: #080e1a;
+    --panel:   #0c1422;
+    --border:  #1a2a40;
+    --wave:    #0077ff;
+    --wave2:   #00c8ff;
+    --gold:    #f0a500;
+    --gold2:   #ffcc44;
+    --white:   #e8f0ff;
+    --gray:    #4a6080;
+    --green:   #00e896;
+    --red:     #ff4455;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BG */
+  .bg-grid {
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(0,119,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,119,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .bg-orb {
+    position:fixed; pointer-events:none; z-index:0;
+    border-radius:50%; filter:blur(80px); opacity:0.12;
+  }
+  .bg-orb-1 { width:500px; height:500px; background:var(--gold); top:-150px; right:-150px; animation:drift 16s ease-in-out infinite alternate; }
+  .bg-orb-2 { width:400px; height:400px; background:var(--wave); bottom:-100px; left:-100px; animation:drift 12s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { from{transform:translate(0,0)} to{transform:translate(30px,20px)} }
+
+  /* NAV */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; padding:0 5%; height:60px;
+    border-bottom:1px solid rgba(26,42,64,0.6);
+    background:rgba(4,8,15,0.88); backdrop-filter:blur(16px);
+  }
+  .nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .nav-logo-icon {
+    width:34px; height:34px; border-radius:9px;
+    background:linear-gradient(135deg,var(--wave),var(--wave2));
+    display:flex; align-items:center; justify-content:center; font-size:17px;
+    box-shadow:0 0 18px rgba(0,119,255,0.4);
+    animation:logopulse 3s ease-in-out infinite;
+  }
+  @keyframes logopulse { 0%,100%{box-shadow:0 0 12px rgba(0,119,255,0.4)} 50%{box-shadow:0 0 26px rgba(0,200,255,0.65)} }
+  .nav-logo-text {
+    font-size:20px; font-weight:800;
+    background:linear-gradient(90deg,var(--wave2),var(--wave));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .nav-spacer { flex:1; }
+  .nav-back {
+    font-family:'Syne Mono',monospace; font-size:11px; color:var(--gray);
+    text-decoration:none; letter-spacing:0.08em; transition:color 0.2s;
+  }
+  .nav-back:hover { color:var(--wave2); }
+
+  /* MAIN */
+  .main {
+    position:relative; z-index:1;
+    max-width:520px; margin:0 auto;
+    padding:90px 20px 60px;
+  }
+
+  /* HERO */
+  .hero-eyebrow {
+    display:inline-flex; align-items:center; gap:7px;
+    padding:5px 14px; border:1px solid rgba(240,165,0,0.35);
+    border-radius:20px; background:rgba(240,165,0,0.07);
+    font-family:'Syne Mono',monospace; font-size:10px;
+    color:var(--gold); letter-spacing:0.14em; margin-bottom:18px;
+    animation:fadeUp 0.6s ease both;
+  }
+  .hero-dot { width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 6px var(--gold); animation:blink 1.4s step-end infinite; }
+  @keyframes blink { 50%{opacity:0} }
+
+  .hero-title {
+    font-size:clamp(32px,7vw,52px); font-weight:800;
+    line-height:1.05; letter-spacing:-0.03em; margin-bottom:12px;
+    animation:fadeUp 0.6s 0.08s ease both;
+  }
+  .hero-title span {
+    background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold));
+    background-size:200%;
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    animation:shimmer 4s linear infinite;
+  }
+  @keyframes shimmer { from{background-position:0%} to{background-position:200%} }
+
+  .hero-sub {
+    font-size:15px; color:var(--gray); line-height:1.65; margin-bottom:28px;
+    animation:fadeUp 0.6s 0.14s ease both;
+  }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+  /* FEATURES */
+  .features {
+    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:28px;
+    animation:fadeUp 0.6s 0.18s ease both;
+  }
+  .feat {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:12px 14px;
+    display:flex; align-items:flex-start; gap:9px;
+  }
+  .feat-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+  .feat-text { font-size:12px; color:var(--gray); line-height:1.4; }
+  .feat-text strong { color:var(--white); display:block; font-size:13px; margin-bottom:2px; }
+
+  /* PRICE CARD */
+  .price-card {
+    background:var(--surface); border:1px solid rgba(240,165,0,0.3);
+    border-radius:20px; padding:28px 24px; margin-bottom:20px;
+    position:relative; overflow:hidden;
+    animation:fadeUp 0.6s 0.22s ease both;
+    box-shadow:0 0 40px rgba(240,165,0,0.06);
+  }
+  .price-glow {
+    position:absolute; top:-1px; left:15%; right:15%; height:2px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  }
+  .price-top {
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;
+  }
+  .price-label { font-family:'Syne Mono',monospace; font-size:10px; color:var(--gray); letter-spacing:0.14em; }
+  .price-amount { font-size:42px; font-weight:800; color:var(--gold); line-height:1; }
+  .price-amount span { font-size:18px; font-weight:600; color:var(--gray); }
+  .price-once { font-family:'Syne Mono',monospace; font-size:10px; color:var(--green); letter-spacing:0.1em; }
+
+  /* STEPS */
+  .steps { display:flex; flex-direction:column; gap:14px; }
+  .step {
+    display:flex; gap:14px; align-items:flex-start;
+  }
+  .step-num {
+    width:28px; height:28px; border-radius:50%; flex-shrink:0;
+    background:linear-gradient(135deg,var(--gold),#cc8800);
+    color:#0a0600; font-weight:800; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step-body { flex:1; }
+  .step-title { font-size:14px; font-weight:700; margin-bottom:3px; }
+  .step-desc { font-size:12px; color:var(--gray); line-height:1.5; }
+
+  /* WALLET CARD */
+  .wallet-card {
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:14px; padding:16px; margin:14px 0;
+    animation:fadeUp 0.6s 0.26s ease both;
+  }
+  .wallet-label {
+    font-family:'Syne Mono',monospace; font-size:10px; color:var(--gray);
+    letter-spacing:0.14em; margin-bottom:10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .wallet-network {
+    background:rgba(240,165,0,0.12); border:1px solid rgba(240,165,0,0.25);
+    border-radius:20px; padding:2px 8px; color:var(--gold); font-size:9px;
+  }
+  .wallet-qr {
+    display:flex; justify-content:center; margin-bottom:12px;
+  }
+  #qrcode { background:white; padding:10px; border-radius:10px; display:inline-block; }
+  .wallet-address {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:10px; padding:10px 12px;
+    font-family:'Syne Mono',monospace; font-size:11px; color:var(--wave2);
+    word-break:break-all; line-height:1.5; margin-bottom:10px;
+    cursor:pointer; transition:border-color 0.2s; user-select:all;
+  }
+  .wallet-address:hover { border-color:var(--wave-dim); }
+  .copy-addr-btn {
+    width:100%; padding:10px; background:linear-gradient(135deg,var(--wave),#0055cc);
+    border:none; border-radius:10px; color:white;
+    font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+    cursor:pointer; transition:all 0.2s; display:flex; align-items:center;
+    justify-content:center; gap:6px;
+  }
+  .copy-addr-btn:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,119,255,0.4); }
+  .copy-addr-btn.copied { background:linear-gradient(135deg,var(--green),#00aa66); }
+
+  /* WHATSAPP BTN */
+  .wa-btn {
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    width:100%; padding:15px; margin-top:20px;
+    background:linear-gradient(135deg,#1a8a3a,#128c2e);
+    border:none; border-radius:14px; color:white;
+    font-family:'Syne',sans-serif; font-size:15px; font-weight:700;
+    cursor:pointer; text-decoration:none; transition:all 0.2s;
+    box-shadow:0 6px 24px rgba(18,140,46,0.3);
+    animation:fadeUp 0.6s 0.3s ease both;
+  }
+  .wa-btn:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(18,140,46,0.45); }
+  .wa-icon { font-size:22px; }
+
+  /* NOTE */
+  .note {
+    margin-top:16px; padding:12px 16px;
+    background:rgba(0,232,150,0.05); border:1px solid rgba(0,232,150,0.15);
+    border-radius:12px; font-size:12px; color:var(--gray); line-height:1.6;
+    animation:fadeUp 0.6s 0.34s ease both;
+  }
+  .note strong { color:var(--green); }
+
+  /* DIVIDER */
+  .divider {
+    display:flex; align-items:center; gap:12px; margin:20px 0;
+    font-family:'Syne Mono',monospace; font-size:10px; color:var(--gray); letter-spacing:0.1em;
+  }
+  .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* TOAST */
+  .toast {
+    position:fixed; bottom:24px; right:16px; padding:10px 16px;
+    background:var(--panel); border:1px solid var(--border);
+    border-left:3px solid var(--green); border-radius:10px;
+    font-size:13px; color:var(--white); z-index:999;
+    opacity:0; transform:translateY(8px); transition:all 0.3s;
+    pointer-events:none;
+  }
+  .toast.show { opacity:1; transform:translateY(0); }
+
+  /* FOOTER */
+  footer {
+    text-align:center; margin-top:40px; padding-bottom:30px;
+    font-family:'Syne Mono',monospace; font-size:10px; color:var(--gray);
+    letter-spacing:0.1em; position:relative; z-index:1;
+  }
+
+  @media (max-width:480px) {
+    .features { grid-template-columns:1fr; }
+    .price-card { padding:22px 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">🌊</div>
+    <div class="nav-logo-text">NeoWave</div>
+  </a>
+  <div class="nav-spacer"></div>
+  <a href="index.html" class="nav-back">← Back to home</a>
+</nav>
+
+<div class="main">
+  <div class="hero-eyebrow"><div class="hero-dot"></div> ONE-TIME PAYMENT · NO SUBSCRIPTION</div>
+  <h1 class="hero-title">Unlock <span>NeoWave Pro</span></h1>
+  <p class="hero-sub">Pay once. Keep it forever. All limits removed — bigger files, more participants, unlimited session time.</p>
+
+  <!-- FEATURES -->
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon">⏱️</div>
+      <div class="feat-text"><strong>Unlimited Sessions</strong>Free: 2hr cap · Pro: forever</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📁</div>
+      <div class="feat-text"><strong>100MB Files</strong>Free: 10MB · Pro: 100MB</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">👥</div>
+      <div class="feat-text"><strong>Full Participants</strong>Free: 2 only · Pro: up to ∞</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🔑</div>
+      <div class="feat-text"><strong>1 Key · All Browsers</strong>Works anywhere, never expires</div>
+    </div>
+  </div>
+
+  <!-- PRICE CARD -->
+  <div class="price-card">
+    <div class="price-glow"></div>
+    <div class="price-top">
+      <div>
+        <div class="price-label">NEOWAVE PRO LICENSE</div>
+        <div class="price-amount">$5 <span>USD</span></div>
+      </div>
+      <div class="price-once">ONE-TIME ✓</div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Send $5 USDT (BEP-20) to this address</div>
+          <div class="step-desc">Use Trust Wallet, Binance, or any BEP-20 wallet. Make sure you select BEP-20 / BSC network.</div>
+        </div>
+      </div>
+
+      <!-- WALLET -->
+      <div class="wallet-card">
+        <div class="wallet-label">
+          USDT WALLET ADDRESS
+          <span class="wallet-network">BEP-20 / BSC</span>
+        </div>
+        <div class="wallet-qr">
+          <div id="qrcode"></div>
+        </div>
+        <div class="wallet-address" onclick="copyAddress()" title="Tap to copy">
+          0x93ad3dE16e9a0dbE45f9e2130a331bF3f04D6Ce8
+        </div>
+        <button class="copy-addr-btn" id="copy-addr-btn" onclick="copyAddress()">
+          📋 Copy Wallet Address
+        </button>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Copy your transaction hash (TX ID)</div>
+          <div class="step-desc">After sending, find the TX hash in your wallet's transaction history. It looks like: <span style="color:var(--wave2);font-family:'Syne Mono',monospace;font-size:11px">0x7f3a...</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Send your TX hash on WhatsApp</div>
+          <div class="step-desc">Message us your TX hash and the name/email to send your key to. We'll verify and reply with your license key — usually within a few hours.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHATSAPP BUTTON -->
+  <a class="wa-btn" id="wa-btn" href="https://wa.me/23273895983?text=Hi%2C%20I%20just%20sent%20%245%20USDT%20for%20NeoWave%20Pro.%20My%20TX%20hash%20is%3A%20" target="_blank" rel="noopener">
+    <span class="wa-icon">📲</span>
+    Send TX Hash on WhatsApp
+  </a>
+
+  <div class="note">
+    <strong>✓ Secure & Private</strong> — We only need your TX hash to verify payment. No account, no email required. Your license key works on any browser and never expires. Once you receive your key, enter it in NeoWave → the ⚡ PRO badge in the top bar.
+  </div>
+
+  <div class="divider">VERIFY YOUR PAYMENT</div>
+
+  <div style="text-align:center; font-size:13px; color:var(--gray); line-height:1.7;">
+    You can verify any transaction on<br>
+    <a href="https://bscscan.com" target="_blank" rel="noopener" style="color:var(--wave2); font-family:'Syne Mono',monospace; font-size:12px;">bscscan.com</a>
+    — paste your TX hash to confirm it went through.
+  </div>
+</div>
+
+<footer>
+  NEOWAVE PRO · <span style="color:#1a2a40">·</span> BY GENESIS GROUP · NO SUBSCRIPTIONS · NO SERVERS
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Generate QR code
+new QRCode(document.getElementById('qrcode'), {
+  text: '0x93ad3dE16e9a0dbE45f9e2130a331bF3f04D6Ce8',
+  width: 160,
+  height: 160,
+  colorDark: '#000000',
+  colorLight: '#ffffff',
+  correctLevel: QRCode.CorrectLevel.M
+});
+
+function copyAddress() {
+  const addr = '0x93ad3dE16e9a0dbE45f9e2130a331bF3f04D6Ce8';
+  const btn = document.getElementById('copy-addr-btn');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(addr).then(() => {
+      btn.textContent = '✓ Copied!'; btn.classList.add('copied');
+      showToast('Wallet address copied!');
+      setTimeout(() => { btn.innerHTML = '📋 Copy Wallet Address'; btn.classList.remove('copied'); }, 2500);
+    }).catch(() => fallbackCopy(addr, btn));
+  } else {
+    fallbackCopy(addr, btn);
+  }
+}
+
+function fallbackCopy(text, btn) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try {
+    document.execCommand('copy');
+    btn.textContent = '✓ Copied!'; btn.classList.add('copied');
+    showToast('Wallet address copied!');
+    setTimeout(() => { btn.innerHTML = '📋 Copy Wallet Address'; btn.classList.remove('copied'); }, 2500);
+  } catch(e) { showToast('Tap the address above to copy manually'); }
+  document.body.removeChild(ta);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Scroll animations
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.feat, .step').forEach(el => {
+  el.style.opacity='0'; el.style.transform='translateY(16px)';
+  el.style.transition='opacity 0.4s ease, transform 0.4s ease';
+  obs.observe(el);
+});
+</script>
+</body>
+</html>
