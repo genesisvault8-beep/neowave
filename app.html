@@ -872,12 +872,6 @@ else { document.getElementById('host-name-modal').classList.add('show'); documen
 // ══════════════════════════════════════
 //  HOST NAME + START
 // ══════════════════════════════════════
-function selectMax(el, val) {
-  document.querySelectorAll('.max-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  maxPeers = val;
-}
-
 function hostStart() {
   const n = document.getElementById('host-name-input').value.trim();
   const p = document.getElementById('host-password-input').value.trim();
