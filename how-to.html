@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to Use NeoWave — Private P2P Messenger</title>
+  <meta name="description" content="Learn how to open a Wave, invite someone, send files, and unlock Pro limits." />
+  <meta name="theme-color" content="#04080f" />
+  <style>
+    :root {
+      --bg:       #04080f;
+      --surface:  #0a1020;
+      --border:   #0d2040;
+      --accent:   #00aaff;
+      --accent2:  #0066cc;
+      --pro:      #f0a500;
+      --pro-dim:  #7a5200;
+      --text:     #c8d8f0;
+      --muted:    #4a6080;
+      --white:    #e8f4ff;
+      --danger:   #ff4466;
+      --radius:   12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(4,8,15,0.92);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    .nav-brand {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+    .nav-brand span { color: var(--accent); }
+    .nav-cta {
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 56px 24px 40px;
+      border-bottom: 1px solid var(--border);
+    }
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .hero h1 {
+      font-size: clamp(26px, 6vw, 40px);
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.8px;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .hero p {
+      font-size: 15px;
+      color: var(--text);
+      max-width: 440px;
+      margin: 0 auto;
+      opacity: 0.85;
+    }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin: 48px 0 20px;
+    }
+
+    /* ── STEP CARDS ── */
+    .steps { display: flex; flex-direction: column; gap: 16px; }
+
+    .step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 0 16px;
+      align-items: start;
+    }
+    .step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0,170,255,0.1);
+      border: 1px solid rgba(0,170,255,0.3);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+    .step-body h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+    .step-body p {
+      font-size: 13.5px;
+      color: var(--text);
+      opacity: 0.8;
+    }
+    .step-note {
+      grid-column: 2;
+      margin-top: 10px;
+      background: rgba(0,170,255,0.07);
+      border-left: 3px solid var(--accent2);
+      border-radius: 6px;
+      padding: 9px 12px;
+      font-size: 12.5px;
+      color: var(--accent);
+    }
+
+    /* ── FILE LIMIT SECTION ── */
+    .limit-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .limit-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .limit-header h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .limit-header p {
+      font-size: 13px;
+      color: var(--text);
+      opacity: 0.75;
+    }
+
+    .tier-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .tier {
+      padding: 20px;
+    }
+    .tier + .tier {
+      border-left: 1px solid var(--border);
+    }
+    .tier-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+    .tier-badge.free {
+      background: rgba(74,96,128,0.3);
+      color: var(--muted);
+      border: 1px solid var(--muted);
+    }
+    .tier-badge.pro {
+      background: rgba(240,165,0,0.15);
+      color: var(--pro);
+      border: 1px solid var(--pro-dim);
+    }
+    .tier ul { list-style: none; }
+    .tier ul li {
+      font-size: 13px;
+      padding: 5px 0;
+      color: var(--text);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .tier ul li::before {
+      content: '—';
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .tier.pro-tier ul li::before {
+      content: '✓';
+      color: var(--pro);
+    }
+    .tier.pro-tier ul li { color: var(--white); }
+
+    .limit-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      background: rgba(240,165,0,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .limit-footer p {
+      font-size: 12.5px;
+      color: var(--text);
+      opacity: 0.7;
+    }
+    .pro-btn {
+      background: var(--pro);
+      color: #000;
+      font-weight: 800;
+      font-size: 12px;
+      padding: 9px 18px;
+      border-radius: 20px;
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    /* ── FAQ ── */
+    .faq { display: flex; flex-direction: column; gap: 12px; }
+    .faq-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .faq-item summary {
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--white);
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    .faq-item summary::after {
+      content: '+';
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 300;
+      flex-shrink: 0;
+    }
+    .faq-item[open] summary::after { content: '−'; }
+    .faq-item p {
+      padding: 0 20px 16px;
+      font-size: 13.5px;
+      color: var(--text);
+      opacity: 0.8;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+
+    /* ── CTA FOOTER ── */
+    .cta-block {
+      margin-top: 56px;
+      background: var(--surface);
+      border: 1px solid rgba(0,170,255,0.2);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .cta-block .wave-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .cta-block h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .cta-block p {
+      font-size: 13.5px;
+      color: var(--text);
+      opacity: 0.75;
+      margin-bottom: 22px;
+    }
+    .cta-block a {
+      display: inline-block;
+      background: var(--accent);
+      color: #000;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 13px 28px;
+      border-radius: 24px;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-brand" href="https://neowave.genesisvault.xyz">🌊 <span>Neo</span>Wave</a>
+    <a class="nav-cta" href="https://neowave.genesisvault.xyz/app.html">Launch App →</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <p class="eyebrow">// Guide</p>
+    <h1>How to Use NeoWave</h1>
+    <p>Open a Wave, invite someone, send files, and stay completely private — in under a minute.</p>
+  </div>
+
+  <main>
+
+    <!-- STEPS -->
+    <p class="section-label">// Getting Started</p>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <h3>Open a Wave</h3>
+          <p>Go to the app, enter your name, choose how many people can join, and optionally set a password. Hit <strong>Open Wave</strong> — your private session is created instantly. No account, no email, no waiting.</p>
+        </div>
+        <div class="step-note">💡 Free tier supports up to 2 participants. Need more? Unlock Pro.</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <h3>Share the Invite Link</h3>
+          <p>Copy your Wave link and send it to whoever you want — via WhatsApp, SMS, email, or any other channel. The link is the only key. Anyone with it (and the password, if you set one) can join directly.</p>
+        </div>
+        <div class="step-note">🔒 The link only works while your Wave is open. It dies with the session.</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <h3>Chat & Send Files</h3>
+          <p>Messages and files travel directly device-to-device via WebRTC — no server in the middle. You'll see live typing indicators as the other person types. Use the 📎 button to attach files.</p>
+        </div>
+        <div class="step-note">📁 Free: up to 10MB per file. Pro: up to 100MB per file.</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-body">
+          <h3>Close the Wave</h3>
+          <p>When everyone leaves, the Wave closes automatically. No history is saved anywhere — not on your device, not on a server, not anywhere. The conversation is gone for good. That's by design.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FILE LIMIT -->
+    <p class="section-label">// File Transfer Limits</p>
+    <div class="limit-card">
+      <div class="limit-header">
+        <h3>📁 Why is there a file size limit?</h3>
+        <p>Free Waves support files up to 10MB — enough for images, documents, and small APKs. For large files, upgrade to Pro once with a license key.</p>
+      </div>
+
+      <div class="tier-row">
+        <div class="tier">
+          <span class="tier-badge free">Free</span>
+          <ul>
+            <li>10MB max per file</li>
+            <li>2-hour session limit</li>
+            <li>Max 2 participants</li>
+            <li>All messages P2P</li>
+          </ul>
+        </div>
+        <div class="tier pro-tier">
+          <span class="tier-badge pro">Pro 🔑</span>
+          <ul>
+            <li>100MB max per file</li>
+            <li>Unlimited session time</li>
+            <li>2, 5, 10, or ∞ people</li>
+            <li>One-time payment, forever</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="limit-footer">
+        <p>No subscription. Pay once on Gumroad, activate on any browser.</p>
+        <a class="pro-btn" href="https://neowave.genesisvault.xyz/buy.html">🔑 Get Pro →</a>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <p class="section-label">// Common Questions</p>
+    <div class="faq">
+
+      <details class="faq-item">
+        <summary>Can anyone see my messages?</summary>
+        <p>No. Messages travel directly between devices using WebRTC DTLS encryption. There is no server that relays or stores your messages — not even NeoWave can see them.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>What happens if I close the browser?</summary>
+        <p>Your Wave closes and all messages are gone. Nothing is saved to any server or device. The invite link also stops working immediately.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Do I need to create an account?</summary>
+        <p>Never. Just enter a name, open a Wave, and share the link. NeoWave has no accounts, no emails, no passwords required (unless you set one for your Wave).</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>What is the 🔒 lock on participant options?</summary>
+        <p>The lock icon on the 5, 10, and ∞ participant options means those tiers are Pro-only. Free Waves support a maximum of 2 people. Upgrade with a one-time license key to unlock all limits.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Does Pro require a monthly subscription?</summary>
+        <p>No. It's a one-time payment. You get a license key from Gumroad, activate it in the app, and your Pro features are unlocked in that browser permanently — no recurring charges.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Can I use NeoWave on mobile?</summary>
+        <p>Yes. NeoWave works on any device with a WebRTC-capable browser — Android, iOS, Windows, Mac. No app install needed.</p>
+      </details>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-block">
+      <span class="wave-icon">🌊</span>
+      <h2>Ready to go off the grid?</h2>
+      <p>Open a Wave in seconds. No signup. No install. Just private.</p>
+      <a href="https://neowave.genesisvault.xyz/app.html">🌊 Launch NeoWave</a>
+    </div>
+
+  </main>
+
+  <footer>
+    <a href="https://neowave.genesisvault.xyz">NeoWave</a> &nbsp;·&nbsp;
+    <a href="https://neowave.genesisvault.xyz/privacy.html">Privacy Policy</a> &nbsp;·&nbsp;
+    By Genesis Group
+  </footer>
+
+</body>
+</html>
