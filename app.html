@@ -307,7 +307,9 @@
     transition:all 0.2s; flex-shrink:0;
   }
   .attach-btn:hover { border-color:var(--wave-dim); color:var(--wave2); background:rgba(0,119,255,0.08); }
+  .attach-btn:disabled { opacity:0.3; cursor:not-allowed; }
   #file-input { display:none; }
+  #message-input:disabled { color:var(--gray); cursor:not-allowed; }
 
   .send-btn {
     width:42px; height:42px; border-radius:50%;
@@ -448,6 +450,47 @@
   .share-whatsapp-btn:hover { background:rgba(37,211,102,0.2); }
   .share-dismiss { font-size:12px; color:var(--gray); cursor:pointer; margin-top:6px; display:block; }
   .share-dismiss:hover { color:var(--white); }
+
+  /* CLOSE/LEAVE WAVE BUTTON */
+  .end-wave-btn {
+    width:100%; padding:10px; margin-top:4px;
+    background:rgba(255,68,85,0.08); border:1px solid rgba(255,68,85,0.3);
+    border-radius:var(--r); color:var(--red);
+    font-family:'Syne',sans-serif; font-size:12px; font-weight:700;
+    letter-spacing:0.03em; cursor:pointer; transition:all 0.2s;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .end-wave-btn:hover { background:rgba(255,68,85,0.16); border-color:var(--red); }
+
+  /* CONFIRM MODAL */
+  #confirm-modal {
+    display:none; position:fixed; inset:0; background:rgba(4,8,15,0.92);
+    z-index:210; align-items:flex-start; justify-content:center;
+    backdrop-filter:blur(8px); padding-top:14vh; overflow-y:auto;
+  }
+  #confirm-modal.show { display:flex; }
+  .confirm-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:20px;
+    padding:28px 22px; text-align:center; max-width:320px; width:90%;
+    box-shadow:0 0 60px rgba(255,68,85,0.12);
+  }
+  .confirm-icon { font-size:38px; margin-bottom:10px; }
+  .confirm-title { font-size:18px; font-weight:800; margin-bottom:8px; color:var(--white); }
+  .confirm-sub { font-size:13px; color:var(--gray); margin-bottom:20px; line-height:1.6; }
+  .confirm-btn-danger {
+    width:100%; padding:12px; background:linear-gradient(135deg,var(--red),#cc2233);
+    border:none; border-radius:10px; color:white; font-family:'Syne',sans-serif;
+    font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s; margin-bottom:8px;
+  }
+  .confirm-btn-danger:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(255,68,85,0.35); }
+  .confirm-dismiss { font-size:12px; color:var(--gray); cursor:pointer; margin-top:6px; display:block; }
+  .confirm-dismiss:hover { color:var(--white); }
+
+  /* WAVE CLOSED SCREEN */
+  .wave-closed-blip { text-align:center; padding:36px 20px; color:var(--gray); animation:fadeIn 0.8s ease; margin:auto; width:100%; max-width:480px; align-self:center; }
+  .wave-closed-icon { font-size:46px; margin-bottom:10px; }
+  .wave-closed-title { font-size:21px; font-weight:800; color:var(--white); margin-bottom:5px; }
+  .wave-closed-sub { font-size:13px; line-height:1.6; }
 
   /* HOST NAME MODAL */
   #host-name-modal {
@@ -652,6 +695,19 @@
   </div>
 </div>
 
+<!-- CONFIRM CLOSE/LEAVE MODAL -->
+<div id="confirm-modal">
+  <div class="confirm-card">
+    <div class="confirm-icon" id="confirm-icon">⚠️</div>
+    <div class="confirm-title" id="confirm-title">Close this Wave?</div>
+    <div class="confirm-sub" id="confirm-sub">
+      Everyone connected will be disconnected immediately. This can't be undone — you'd need to start a new Wave.
+    </div>
+    <button class="confirm-btn-danger" id="confirm-btn" onclick="confirmEndWave()">Yes, close it</button>
+    <span class="confirm-dismiss" onclick="closeConfirmModal()">Cancel</span>
+  </div>
+</div>
+
 <!-- SHARE MODAL -->
 <div id="share-modal">
   <div class="share-card">
@@ -808,6 +864,9 @@
       <div class="sidebar-label">Participants (<span id="peer-count">0</span>)</div>
     </div>
     <div class="participants" id="participants-list"></div>
+    <div class="sidebar-section" style="border-bottom:none; margin-top:auto;">
+      <button class="end-wave-btn" id="end-wave-btn" onclick="openConfirmModal()">✕ Close Wave</button>
+    </div>
   </div>
 
   <!-- WAVE AREA -->
@@ -1002,6 +1061,9 @@ function handleData(data, fromId, conn) {
     setStatus('waiting', data.reason);
     document.getElementById('connect-status').textContent = '✗ ' + data.reason;
     document.getElementById('connect-status').className = 'connect-status error';
+  }
+  else if (data.type === 'WAVE_CLOSED') {
+    handleWaveClosedByHost();
   }
   else if (data.type === 'TYPING')    { showLiveTyping(fromId, data.text, data.name, data.color); if(isHost) broadcast(data,fromId); }
   else if (data.type === 'STOP_TYPING') { clearLiveTyping(fromId); if(isHost) broadcast(data,fromId); }
@@ -1329,8 +1391,88 @@ function removePeer(peerId) {
 }
 
 // ══════════════════════════════════════
-//  COPY LINK
+//  CLOSE / LEAVE WAVE
 // ══════════════════════════════════════
+function openConfirmModal() {
+  const icon  = document.getElementById('confirm-icon');
+  const title = document.getElementById('confirm-title');
+  const sub   = document.getElementById('confirm-sub');
+  const btn   = document.getElementById('confirm-btn');
+
+  if (isHost) {
+    icon.textContent = '🌊';
+    title.textContent = 'Close this Wave?';
+    sub.textContent = "Everyone connected will be disconnected immediately. This can't be undone — you'd need to start a new Wave.";
+    btn.textContent = 'Yes, close it';
+  } else {
+    icon.textContent = '👋';
+    title.textContent = 'Leave this Wave?';
+    sub.textContent = "You'll be disconnected from the host and other participants. You can't rejoin without a new invite link.";
+    btn.textContent = 'Yes, leave';
+  }
+  document.getElementById('confirm-modal').classList.add('show');
+}
+
+function closeConfirmModal() {
+  document.getElementById('confirm-modal').classList.remove('show');
+}
+
+function confirmEndWave() {
+  closeConfirmModal();
+  if (isHost) {
+    // Tell all guests the wave is closing, then tear everything down
+    broadcast({ type:'WAVE_CLOSED' });
+    setTimeout(() => {
+      Object.values(connections).forEach(p => { try { p.conn?.close(); } catch(e){} });
+      if (myPeer) { try { myPeer.destroy(); } catch(e){} }
+      showWaveEndedScreen('host');
+    }, 200); // tiny delay so the WAVE_CLOSED message has time to send
+  } else {
+    // Guest leaving: close connection to host — host's existing close
+    // handler (removePeer) will clean up and notify remaining guests
+    setTimeout(() => {
+      Object.values(connections).forEach(p => { try { p.conn?.close(); } catch(e){} });
+      if (myPeer) { try { myPeer.destroy(); } catch(e){} }
+      showWaveEndedScreen('self');
+    }, 100);
+  }
+}
+
+// Called on a guest's device when the host closes the Wave
+function handleWaveClosedByHost() {
+  Object.values(connections).forEach(p => { try { p.conn?.close(); } catch(e){} });
+  if (myPeer) { try { myPeer.destroy(); } catch(e){} }
+  showWaveEndedScreen('host-closed');
+}
+
+function showWaveEndedScreen(reason) {
+  if (sessionTimer) { clearTimeout(sessionTimer); sessionTimer = null; }
+  setStatus('offline', 'Wave closed');
+  const blips = document.getElementById('blips');
+
+  let title, sub;
+  if (reason === 'host')        { title = 'Wave closed';        sub = "You closed this Wave. Everyone has been disconnected."; }
+  else if (reason === 'self')   { title = "You've left";        sub = "You left the Wave. The conversation continues without you."; }
+  else                          { title = 'Wave closed';        sub = "The host closed this Wave. The conversation is over — nothing was saved."; }
+
+  blips.innerHTML = `
+    <div class="wave-closed-blip">
+      <div class="wave-closed-icon">🌊</div>
+      <div class="wave-closed-title">${title}</div>
+      <div class="wave-closed-sub">${sub}<br><br>Refresh this page to start or join a new Wave.</div>
+    </div>`;
+  blips.classList.remove('empty');
+
+  // Disable input
+  document.getElementById('message-input').disabled = true;
+  document.getElementById('message-input').placeholder = 'Wave closed — refresh to start a new one';
+  document.querySelectorAll('.send-btn, .attach-btn').forEach(b => b.disabled = true);
+  document.getElementById('end-wave-btn').disabled = true;
+  document.getElementById('end-wave-btn').style.opacity = '0.4';
+  document.getElementById('end-wave-btn').style.cursor = 'not-allowed';
+}
+
+
 function getInviteUrl() {
   if (!myId) return '';
   const base = window.location.href.split('?')[0];
