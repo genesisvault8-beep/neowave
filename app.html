@@ -860,13 +860,13 @@
         <div class="wave-swatch" data-wave="#0891b2" data-wave2="#22d3ee" style="background:linear-gradient(135deg,#0891b2,#22d3ee)" title="Cyan"></div>
       </div>
     </div>
+    <div class="sidebar-section">
+      <button class="end-wave-btn" id="end-wave-btn" onclick="openConfirmModal()">✕ Close Wave</button>
+    </div>
     <div class="sidebar-section" style="padding-bottom:8px">
       <div class="sidebar-label">Participants (<span id="peer-count">0</span>)</div>
     </div>
     <div class="participants" id="participants-list"></div>
-    <div class="sidebar-section" style="border-bottom:none; margin-top:auto;">
-      <button class="end-wave-btn" id="end-wave-btn" onclick="openConfirmModal()">✕ Close Wave</button>
-    </div>
   </div>
 
   <!-- WAVE AREA -->
@@ -951,11 +951,15 @@ document.getElementById('host-name-input')?.addEventListener('keydown', e => {
 // ══════════════════════════════════════
 //  HOST
 // ══════════════════════════════════════
+let hostRetryCount = 0;
+const MAX_HOST_RETRIES = 3;
+
 function initHost() {
   myColor = COLORS[0];
   setStatus('waiting','Generating Wave ID...');
   myPeer = new Peer(undefined, { debug:0 });
   myPeer.on('open', id => {
+    hostRetryCount = 0; // reset on success
     myId = id;
     document.getElementById('wave-id-display').textContent = id;
     document.getElementById('wave-id-display').classList.remove('loading');
@@ -976,12 +980,48 @@ function initHost() {
     conn.on('close', ()   => removePeer(conn.peer));
     conn.on('error', ()   => removePeer(conn.peer));
   });
-  myPeer.on('error', err => { setStatus('offline','Error: '+err.type); showToast('Error: '+err.type,'error'); });
+  myPeer.on('error', err => handleHostPeerError(err));
+}
+
+function handleHostPeerError(err) {
+  const retryable = (err.type === 'server-error' || err.type === 'network' || err.type === 'socket-error' || err.type === 'socket-closed');
+
+  if (retryable && hostRetryCount < MAX_HOST_RETRIES) {
+    hostRetryCount++;
+    const delay = hostRetryCount * 1500; // 1.5s, 3s, 4.5s
+    setStatus('waiting', `Connection issue — retrying (${hostRetryCount}/${MAX_HOST_RETRIES})...`);
+    document.getElementById('wave-id-display').textContent = 'reconnecting...';
+    document.getElementById('wave-id-display').classList.add('loading');
+    try { myPeer?.destroy(); } catch(e) {}
+    setTimeout(() => initHost(), delay);
+    return;
+  }
+
+  // Out of retries, or a non-retryable error
+  setStatus('offline', 'Connection failed');
+  document.getElementById('wave-id-display').textContent = 'Connection failed';
+  document.getElementById('wave-id-display').classList.remove('loading');
+  if (retryable) {
+    showToast('⚠️ Can\'t reach the connection server. Check your network and tap to retry.','error');
+    document.getElementById('wave-id-display').style.cursor = 'pointer';
+    document.getElementById('wave-id-display').onclick = () => {
+      hostRetryCount = 0;
+      document.getElementById('wave-id-display').onclick = null;
+      document.getElementById('wave-id-display').style.cursor = '';
+      initHost();
+    };
+    document.getElementById('wave-id-display').title = 'Tap to retry';
+  } else {
+    showToast('Error: '+err.type,'error');
+  }
 }
 
 // ══════════════════════════════════════
 //  GUEST
 // ══════════════════════════════════════
+let guestRetryCount = 0;
+const MAX_GUEST_RETRIES = 3;
+
 function guestJoin() {
   const n = document.getElementById('guest-name').value.trim();
   myName  = n || NAMES[Math.floor(Math.random()*NAMES.length)];
@@ -990,6 +1030,7 @@ function guestJoin() {
   statusEl.textContent = 'Connecting...'; statusEl.className = 'connect-status connecting';
   myPeer = new Peer(undefined, { debug:0 });
   myPeer.on('open', id => {
+    guestRetryCount = 0; // reset on success
     myId = id;
     const conn = myPeer.connect(hostPeerId, { reliable:true });
     conn.on('open', () => {
@@ -1015,7 +1056,32 @@ function guestJoin() {
     conn.on('close', ()   => { showToast('Host disconnected.','error'); setStatus('waiting','Disconnected'); });
     conn.on('error', ()   => { statusEl.textContent='✗ Failed. Check the link.'; statusEl.className='connect-status error'; });
   });
-  myPeer.on('error', err => { statusEl.textContent='✗ '+err.type; statusEl.className='connect-status error'; });
+  myPeer.on('error', err => handleGuestPeerError(err, statusEl));
+}
+
+function handleGuestPeerError(err, statusEl) {
+  const retryable = (err.type === 'server-error' || err.type === 'network' || err.type === 'socket-error' || err.type === 'socket-closed');
+
+  if (retryable && guestRetryCount < MAX_GUEST_RETRIES) {
+    guestRetryCount++;
+    const delay = guestRetryCount * 1500;
+    statusEl.textContent = `Connection issue — retrying (${guestRetryCount}/${MAX_GUEST_RETRIES})...`;
+    statusEl.className = 'connect-status connecting';
+    try { myPeer?.destroy(); } catch(e) {}
+    setTimeout(() => guestJoin(), delay);
+    return;
+  }
+
+  if (retryable) {
+    statusEl.innerHTML = "✗ Can't reach the connection server.<br><span style='text-decoration:underline;cursor:pointer' id='guest-retry-link'>Tap to retry</span>";
+    statusEl.className = 'connect-status error';
+    document.getElementById('guest-retry-link')?.addEventListener('click', () => {
+      guestRetryCount = 0;
+      guestJoin();
+    });
+  } else {
+    statusEl.textContent='✗ '+err.type; statusEl.className='connect-status error';
+  }
 }
 
 // ══════════════════════════════════════
