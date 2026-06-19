@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
 <title>NeoWave — Private P2P Messenger</title>
 <meta name="theme-color" content="#04080f">
@@ -14,21 +12,19 @@
 <meta name="apple-mobile-web-app-title" content="NeoWave">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
-<!-- OG / Social Preview -->
+
 <meta property="og:title" content="NeoWave — Private P2P Messenger">
 <meta property="og:description" content="Private peer-to-peer messaging. No servers. No accounts. No logs. When the Wave closes, it's gone.">
 <meta property="og:image" content="https://neowave.genesisvault.xyz/og-image.png">
 <meta property="og:url" content="https://neowave.genesisvault.xyz">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="NeoWave by Genesis Group">
-
-<!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="NeoWave — Private P2P Messenger">
 <meta name="twitter:description" content="No servers. No accounts. No traces. Pure encrypted P2P chat.">
 <meta name="twitter:image" content="https://neowave.genesisvault.xyz/og-image.png">
+
 <style>
   :root {
     --bg:       #04080f;
@@ -47,7 +43,7 @@
     --r: 10px;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  html { height: 100%; }
+  html { height:100%; }
   body {
     background: var(--bg);
     color: var(--white);
@@ -59,33 +55,7 @@
     overflow: hidden;
   }
 
-  /* ── DESKTOP APP SHELL ── */
-  @media (min-width: 769px) {
-    body {
-      align-items: center;
-      justify-content: center;
-      background: #020509;
-    }
-    .app-shell {
-      width: min(1100px, 96vw);
-      height: min(760px, 94vh);
-      display: flex;
-      flex-direction: column;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 32px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,119,255,0.1);
-      position: relative;
-      z-index: 1;
-    }
-  }
-  @media (max-width: 768px) {
-    .app-shell {
-      display: contents; /* transparent on mobile — no effect */
-    }
-  }
-
-  /* BG */
+  /* ── BG ── */
   .bg-waves { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; background:var(--bg); }
   .bg-waves::before {
     content:''; position:absolute; width:200%; height:200%; top:-50%; left:-50%;
@@ -101,7 +71,96 @@
     background-size: 50px 50px;
   }
 
-  /* TOPBAR */
+  /* ── CONNECT SCREEN ── */
+  #connect-screen {
+    display:none; position:fixed; inset:0; z-index:100;
+    background:rgba(4,8,15,0.97); backdrop-filter:blur(12px);
+    align-items:center; justify-content:center; padding:16px;
+    overflow-y:auto;
+  }
+  #connect-screen.show { display:flex; }
+
+  .connect-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:20px;
+    padding:32px 28px; max-width:420px; width:100%;
+    box-shadow:0 0 80px rgba(0,119,255,0.12); text-align:center;
+    position:relative; z-index:1;
+  }
+  .connect-icon { font-size:44px; margin-bottom:14px; }
+  .connect-title {
+    font-size:26px; font-weight:800; margin-bottom:6px;
+    background:linear-gradient(90deg,var(--wave2),var(--wave));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .connect-sub { font-size:13px; color:var(--gray); line-height:1.6; margin-bottom:16px; }
+  .connect-privacy {
+    display:flex; flex-direction:column; gap:6px;
+    background:rgba(0,119,255,0.05); border:1px solid var(--wave-dim);
+    border-radius:10px; padding:12px 14px; margin-bottom:18px; text-align:left;
+  }
+  .connect-privacy-row { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--gray); }
+  .name-input {
+    width:100%; padding:11px 14px; background:var(--panel);
+    border:1px solid var(--border); border-radius:var(--r);
+    color:var(--white); font-family:'Syne',sans-serif; font-size:14px;
+    outline:none; margin-bottom:12px; transition:border-color 0.2s;
+  }
+  .name-input:focus { border-color:var(--wave-dim); }
+  .name-input::placeholder { color:var(--gray2); }
+  .join-btn {
+    width:100%; padding:13px; border:none; border-radius:var(--r);
+    background:linear-gradient(135deg,var(--wave),#0055cc);
+    color:white; font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
+    letter-spacing:0.03em; cursor:pointer; transition:all 0.2s; margin-bottom:8px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .join-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,119,255,0.35); }
+  .join-btn:active { transform:translateY(0); }
+  .join-btn.secondary {
+    background:linear-gradient(135deg,#0a1a3a,#0a2a30);
+    border:1px solid var(--wave-dim);
+  }
+  .code-textarea {
+    width:100%; background:var(--panel); border:1px solid var(--border);
+    border-radius:10px; padding:10px 12px; color:var(--wave2);
+    font-family:'Syne Mono',monospace; font-size:10px;
+    resize:none; height:88px; outline:none; word-break:break-all;
+    transition:border-color 0.2s; margin-bottom:10px; line-height:1.5;
+  }
+  .code-textarea:focus { border-color:var(--wave-dim); }
+  .code-textarea.input { color:var(--white); }
+  .connect-status {
+    font-size:12px; font-family:'Syne Mono',monospace;
+    margin-top:8px; min-height:18px; letter-spacing:0.04em;
+  }
+  .connect-status.connecting { color:var(--gold); }
+  .connect-status.success    { color:var(--green); }
+  .connect-status.error      { color:var(--red); }
+  .step-label {
+    font-size:10px; letter-spacing:0.15em; text-transform:uppercase;
+    color:var(--gray); font-family:'Syne Mono',monospace; margin-bottom:10px;
+  }
+  .waiting-note {
+    margin-top:12px; font-size:12px; color:var(--gold);
+    font-family:'Syne Mono',monospace; letter-spacing:0.04em;
+  }
+
+  /* ── DESKTOP SHELL ── */
+  @media (min-width:769px) {
+    body { align-items:center; justify-content:center; background:#020509; }
+    .app-shell {
+      width:min(1100px,96vw); height:min(760px,94vh);
+      display:flex; flex-direction:column;
+      border:1px solid var(--border); border-radius:18px; overflow:hidden;
+      box-shadow:0 32px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,119,255,0.1);
+      position:relative; z-index:1;
+    }
+  }
+  @media (max-width:768px) {
+    .app-shell { display:contents; }
+  }
+
+  /* ── TOPBAR ── */
   .topbar {
     display:flex; align-items:center; padding:0 16px; height:54px;
     border-bottom:1px solid var(--border); background:rgba(8,14,26,0.97);
@@ -133,18 +192,19 @@
     display:flex; align-items:center; gap:6px; padding:5px 11px;
     border-radius:20px; border:1px solid var(--border);
     font-size:11px; font-family:'Syne Mono',monospace; color:var(--gray); background:var(--panel);
+    white-space:nowrap;
   }
   .status-dot { width:7px; height:7px; border-radius:50%; background:var(--gray2); transition:all 0.3s; }
   .status-dot.online  { background:var(--green); box-shadow:0 0 8px var(--green); }
   .status-dot.waiting { background:var(--gold); box-shadow:0 0 8px var(--gold); animation:blink 1s step-end infinite; }
   @keyframes blink { 50%{opacity:0} }
 
-  /* MAIN */
+  /* ── MAIN ── */
   .main { display:flex; flex:1; overflow:hidden; position:relative; z-index:1; width:100%; }
 
-  /* SIDEBAR */
+  /* ── SIDEBAR ── */
   .sidebar {
-    width:300px; border-right:1px solid var(--border);
+    width:280px; border-right:1px solid var(--border);
     display:flex; flex-direction:column; background:rgba(8,14,26,0.92); flex-shrink:0;
   }
   .sidebar-section { padding:14px 16px; border-bottom:1px solid var(--border); }
@@ -154,41 +214,23 @@
   }
   .wave-id-box {
     background:var(--panel); border:1px solid var(--border); border-radius:var(--r);
-    padding:9px 11px; font-family:'Syne Mono',monospace; font-size:12px;
-    color:var(--wave2); word-break:break-all; min-height:34px;
+    padding:9px 11px; font-family:'Syne Mono',monospace; font-size:11px;
+    color:var(--green); word-break:break-all; min-height:34px;
   }
-  .wave-id-box.loading { color:var(--gray); animation:shimmer 1.5s infinite; }
-  .invite-input {
-    width:100%; margin-top:6px; padding:8px 11px;
-    background:var(--panel); border:1px solid var(--border); border-radius:var(--r);
-    color:var(--wave2); font-family:'Syne Mono',monospace; font-size:11px;
-    outline:none; word-break:break-all; cursor:text;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  }
-  .invite-input:focus { border-color:var(--wave-dim); }
-  @keyframes shimmer { 0%,100%{opacity:0.5} 50%{opacity:1} }
-  .copy-btn {
+  .action-btn {
     width:100%; margin-top:8px; padding:9px;
-    background:linear-gradient(135deg,var(--wave),#0055cc);
-    border:none; border-radius:var(--r); color:white;
+    background:linear-gradient(135deg,#0a1a3a,#0a2a30);
+    border:1px solid var(--wave-dim); border-radius:var(--r); color:var(--wave2);
     font-family:'Syne',sans-serif; font-size:12px; font-weight:700;
     letter-spacing:0.04em; cursor:pointer; transition:all 0.2s;
     display:flex; align-items:center; justify-content:center; gap:6px;
   }
-  .copy-btn:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,119,255,0.4); }
-  .copy-btn.copied { background:linear-gradient(135deg,var(--green),#00aa66); }
+  .action-btn:hover { border-color:var(--wave); color:var(--white); }
   .copy-hint { font-size:11px; color:var(--gray); text-align:center; margin-top:6px; line-height:1.4; }
-
-  /* privacy stats */
   .privacy-stats { display:flex; flex-direction:column; gap:7px; }
-  .pstat {
-    display:flex; align-items:center; gap:8px;
-    font-size:12px; color:var(--gray);
-  }
+  .pstat { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--gray); }
   .pstat-icon { font-size:14px; }
   .pstat strong { color:var(--white); }
-
-  /* participants */
   .participants { flex:1; overflow-y:auto; padding:10px 14px; }
   .participant {
     display:flex; align-items:center; gap:9px; padding:7px 9px;
@@ -204,18 +246,48 @@
   .participant-status { font-size:10px; color:var(--gray); font-family:'Syne Mono',monospace; }
   .online-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 5px var(--green); margin-left:auto; flex-shrink:0; }
 
-  /* WAVE AREA */
+  /* ── SIDEBAR MOBILE TOGGLE ── */
+  .sidebar-toggle {
+    display:none; width:36px; height:36px; border-radius:8px;
+    background:var(--panel); border:1px solid var(--border);
+    color:var(--gray); font-size:16px; cursor:pointer;
+    align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0;
+  }
+  .sidebar-toggle:hover { border-color:var(--wave-dim); color:var(--wave2); }
+  .sidebar-overlay {
+    display:none; position:fixed; top:54px; left:0; right:0; bottom:0;
+    background:rgba(4,8,15,0.35); z-index:40;
+  }
+  .sidebar-overlay.show { display:block; }
+
+  @media (min-width:769px) {
+    .sidebar-toggle { display:none !important; }
+    .sidebar-overlay { display:none !important; }
+  }
+  @media (max-width:768px) {
+    .sidebar {
+      position:fixed; left:-100%; top:54px; bottom:0; z-index:50;
+      transition:left 0.3s ease; width:85%; max-width:300px;
+      box-shadow:4px 0 30px rgba(0,0,0,0.5); background:var(--surface); overflow-y:auto;
+    }
+    .sidebar.open { left:0; }
+    .sidebar-toggle { display:flex; }
+    .topbar { padding:0 10px; gap:8px; }
+    .logo-text { font-size:18px; }
+    .logo-sub { display:none; }
+    .enc-badge { padding:3px 8px; font-size:9px; }
+    .status-pill { padding:4px 8px; font-size:10px; }
+  }
+
+  /* ── WAVE AREA ── */
   .wave-area { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
 
-  /* BLIPS */
+  /* ── BLIPS ── */
   .blips {
     flex:1; overflow-y:auto; padding:18px 24px;
     display:flex; flex-direction:column; gap:14px;
   }
-  @media (min-width:769px) {
-    .blips { padding:22px 32px; }
-    .blip, .file-blip { max-width:65%; }
-  }
+  @media (min-width:769px) { .blips { padding:22px 32px; } }
   .blips::-webkit-scrollbar { width:4px; }
   .blips::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 
@@ -232,718 +304,243 @@
   }
 
   .blip { display:flex; flex-direction:column; gap:2px; animation:blipIn 0.22s ease; max-width:72%; }
+  @media (max-width:768px) { .blip, .file-blip { max-width:88%; } }
   @keyframes blipIn { from{opacity:0;transform:translateY(7px)} to{opacity:1;transform:translateY(0)} }
   .blip.mine   { align-self:flex-end; align-items:flex-end; }
   .blip.theirs { align-self:flex-start; align-items:flex-start; }
   .blip-header { display:flex; align-items:center; gap:6px; padding:0 3px; }
-  .blip-avatar {
-    width:20px; height:20px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    font-size:10px; font-weight:700; flex-shrink:0;
-  }
+  .blip-avatar { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; flex-shrink:0; }
   .blip-name  { font-size:11px; color:var(--gray); font-weight:600; }
   .blip-time  { font-size:10px; color:var(--gray2); font-family:'Syne Mono',monospace; }
-  .blip-bubble {
-    padding:9px 13px; border-radius:16px; font-size:14px;
-    line-height:1.55; word-break:break-word; white-space:pre-wrap;
-  }
+  .blip-bubble { padding:9px 13px; border-radius:16px; font-size:14px; line-height:1.55; word-break:break-word; white-space:pre-wrap; }
   .blip.mine   .blip-bubble { background:linear-gradient(135deg,var(--wave),#0055cc); color:white; border-bottom-right-radius:4px; }
   .blip.theirs .blip-bubble { background:var(--panel); border:1px solid var(--border); color:var(--white); border-bottom-left-radius:4px; }
   .blip-bubble.live { border:1px solid var(--wave-dim); background:rgba(0,119,255,0.06); color:var(--wave2); }
   .blip-bubble.live::after { content:'▌'; animation:cursor 0.8s step-end infinite; color:var(--wave2); }
   @keyframes cursor { 50%{opacity:0} }
 
-  /* FILE BLIP */
-  .file-blip {
-    display:flex; flex-direction:column; gap:2px; animation:blipIn 0.22s ease; max-width:72%;
-  }
+  /* ── FILE BLIP ── */
+  .file-blip { display:flex; flex-direction:column; gap:2px; animation:blipIn 0.22s ease; max-width:72%; }
   .file-blip.mine   { align-self:flex-end; align-items:flex-end; }
   .file-blip.theirs { align-self:flex-start; align-items:flex-start; }
-
-  .file-card {
-    padding:12px 14px; border-radius:14px; min-width:220px; max-width:300px;
-    display:flex; flex-direction:column; gap:10px;
-  }
+  .file-card { padding:12px 14px; border-radius:14px; min-width:220px; max-width:300px; display:flex; flex-direction:column; gap:10px; }
   .file-blip.mine   .file-card { background:linear-gradient(135deg,#00336a,#001a40); border:1px solid var(--wave-dim); border-bottom-right-radius:4px; }
   .file-blip.theirs .file-card { background:var(--panel); border:1px solid var(--border); border-bottom-left-radius:4px; }
-
   .file-info { display:flex; align-items:center; gap:10px; }
   .file-icon { font-size:26px; flex-shrink:0; }
   .file-meta { flex:1; min-width:0; }
   .file-name { font-size:13px; font-weight:700; color:var(--white); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .file-size { font-size:11px; color:var(--gray); font-family:'Syne Mono',monospace; margin-top:2px; }
-
-  /* image preview */
   .file-preview { border-radius:8px; overflow:hidden; max-height:180px; }
   .file-preview img { width:100%; height:100%; object-fit:cover; display:block; }
-
-  /* progress bar */
   .file-progress { display:flex; flex-direction:column; gap:4px; }
   .progress-track { height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden; }
   .progress-fill  { height:100%; background:var(--wave2); border-radius:2px; transition:width 0.15s; box-shadow:0 0 6px var(--wave2); }
   .progress-label { font-size:10px; color:var(--gray); font-family:'Syne Mono',monospace; }
-
   .download-btn {
     display:flex; align-items:center; justify-content:center; gap:6px;
-    padding:7px 12px; background:rgba(0,119,255,0.15);
-    border:1px solid var(--wave-dim); border-radius:8px;
-    color:var(--wave2); font-size:12px; font-weight:700;
+    padding:7px 12px; background:rgba(0,119,255,0.15); border:1px solid var(--wave-dim);
+    border-radius:8px; color:var(--wave2); font-size:12px; font-weight:700;
     cursor:pointer; transition:all 0.2s; text-decoration:none;
     font-family:'Syne',sans-serif; letter-spacing:0.03em;
   }
   .download-btn:hover { background:rgba(0,119,255,0.28); border-color:var(--wave); }
 
-  /* system blip */
-  .system-blip {
-    text-align:center; font-size:11px; color:var(--gray);
-    font-family:'Syne Mono',monospace; padding:3px 0; letter-spacing:0.06em;
-  }
+  /* ── SYSTEM BLIP ── */
+  .system-blip { text-align:center; font-size:11px; color:var(--gray); font-family:'Syne Mono',monospace; padding:3px 0; letter-spacing:0.06em; }
 
-  /* typing indicator */
-  .typing-indicator {
-    display:none; align-self:flex-start; padding:8px 13px;
-    background:var(--panel); border:1px solid var(--border);
-    border-radius:16px; border-bottom-left-radius:4px; gap:4px; align-items:center;
-  }
+  /* ── TYPING INDICATOR ── */
+  .typing-indicator { display:none; align-self:flex-start; padding:8px 13px; background:var(--panel); border:1px solid var(--border); border-radius:16px; border-bottom-left-radius:4px; gap:4px; align-items:center; }
   .typing-indicator.show { display:flex; }
   .typing-dot { width:6px; height:6px; border-radius:50%; background:var(--gray); animation:typedot 1.2s ease-in-out infinite; }
   .typing-dot:nth-child(2) { animation-delay:0.2s; }
   .typing-dot:nth-child(3) { animation-delay:0.4s; }
   @keyframes typedot { 0%,60%,100%{transform:translateY(0);background:var(--gray)} 30%{transform:translateY(-4px);background:var(--wave2)} }
 
-  /* INPUT AREA */
-  .input-area {
-    border-top:1px solid var(--border); padding:12px 16px;
-    background:rgba(8,14,26,0.95); backdrop-filter:blur(10px); flex-shrink:0;
-  }
+  /* ── INPUT AREA ── */
+  .input-area { border-top:1px solid var(--border); padding:12px 16px; background:rgba(8,14,26,0.95); backdrop-filter:blur(10px); flex-shrink:0; }
+  @media (max-width:768px) { .input-area { padding:10px 12px; padding-bottom:max(10px,env(safe-area-inset-bottom)); } }
   .input-row { display:flex; gap:8px; align-items:flex-end; }
-  .input-wrap {
-    flex:1; background:var(--panel); border:1px solid var(--border); border-radius:20px;
-    padding:9px 14px; transition:all 0.2s; display:flex; align-items:center; gap:8px;
-  }
+  .input-wrap { flex:1; background:var(--panel); border:1px solid var(--border); border-radius:20px; padding:9px 14px; transition:all 0.2s; display:flex; align-items:center; gap:8px; }
   .input-wrap:focus-within { border-color:var(--wave-dim); box-shadow:0 0 0 3px rgba(0,119,255,0.1); }
-  #message-input {
-    flex:1; background:transparent; border:none; outline:none;
-    color:var(--white); font-family:'Syne',sans-serif; font-size:14px;
-    resize:none; max-height:110px; line-height:1.5; caret-color:var(--wave2);
-  }
+  #message-input { flex:1; background:transparent; border:none; outline:none; color:var(--white); font-family:'Syne',sans-serif; font-size:14px; resize:none; max-height:110px; line-height:1.5; caret-color:var(--wave2); }
   #message-input::placeholder { color:var(--gray2); }
-
-  /* file attach btn */
-  .attach-btn {
-    width:30px; height:30px; border-radius:50%; background:transparent;
-    border:1px solid var(--border); color:var(--gray); font-size:15px;
-    cursor:pointer; display:flex; align-items:center; justify-content:center;
-    transition:all 0.2s; flex-shrink:0;
-  }
-  .attach-btn:hover { border-color:var(--wave-dim); color:var(--wave2); background:rgba(0,119,255,0.08); }
-  .attach-btn:disabled { opacity:0.3; cursor:not-allowed; }
+  .attach-btn { background:none; border:none; color:var(--gray); font-size:18px; cursor:pointer; padding:0; line-height:1; flex-shrink:0; transition:color 0.2s; }
+  .attach-btn:hover { color:var(--wave2); }
   #file-input { display:none; }
-  #message-input:disabled { color:var(--gray); cursor:not-allowed; }
-
   .send-btn {
-    width:42px; height:42px; border-radius:50%;
+    width:40px; height:40px; border-radius:50%; border:none; flex-shrink:0;
     background:linear-gradient(135deg,var(--wave),#0055cc);
-    border:none; color:white; font-size:17px; cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    transition:all 0.2s; flex-shrink:0; box-shadow:0 2px 12px rgba(0,119,255,0.3);
+    color:white; font-size:16px; cursor:pointer; display:flex;
+    align-items:center; justify-content:center; transition:all 0.2s;
+    box-shadow:0 2px 10px rgba(0,119,255,0.4);
   }
-  .send-btn:hover { transform:scale(1.08); box-shadow:0 4px 20px rgba(0,119,255,0.5); }
-  .send-btn:disabled { opacity:0.3; cursor:not-allowed; transform:none; }
+  .send-btn:hover { transform:scale(1.08); box-shadow:0 4px 16px rgba(0,119,255,0.5); }
+  .input-hint { font-size:10px; color:var(--gray2); margin-top:6px; letter-spacing:0.04em; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .live-badge { display:inline-flex; align-items:center; gap:3px; color:var(--wave2); font-family:'Syne Mono',monospace; }
+  .live-dot { width:5px; height:5px; border-radius:50%; background:var(--wave2); animation:blink 1s step-end infinite; }
+  .p2p-badge { color:var(--green); font-family:'Syne Mono',monospace; }
 
-  .input-hint {
-    font-size:10px; color:var(--gray2); margin-top:5px;
-    font-family:'Syne Mono',monospace; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-  }
-  .live-badge { display:inline-flex; align-items:center; gap:4px; color:var(--wave2); font-size:10px; }
-  .live-dot { width:5px; height:5px; border-radius:50%; background:var(--wave2); box-shadow:0 0 4px var(--wave2); animation:blink 1s step-end infinite; }
-  .p2p-badge { display:inline-flex; align-items:center; gap:4px; color:var(--green); font-size:10px; }
-
-  /* CONNECT SCREEN */
-  #connect-screen {
-    display:none; position:fixed; inset:0; background:var(--bg); z-index:100;
-    align-items:flex-start; justify-content:center; flex-direction:column; 
-    padding-top:12vh; overflow-y:auto;
-  }
-  #connect-screen.show { display:flex; }
-  .connect-card {
-    background:var(--surface); border:1px solid var(--border); border-radius:18px;
-    padding:28px 20px; text-align:center; max-width:340px; width:92%; position:relative; z-index:1;
-    box-sizing:border-box;
-  }
-  .connect-icon { font-size:50px; margin-bottom:14px; animation:logopulse 2s infinite; }
-  .connect-title { font-size:25px; font-weight:800; margin-bottom:7px; }
-  .connect-title span { background:linear-gradient(90deg,var(--wave2),var(--wave)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-  .connect-sub { font-size:13px; color:var(--gray); margin-bottom:10px; line-height:1.55; }
-  .connect-privacy {
-    display:flex; flex-direction:column; gap:5px; margin-bottom:20px;
-    padding:10px 14px; background:rgba(0,232,150,0.05);
-    border:1px solid rgba(0,232,150,0.15); border-radius:10px; text-align:left;
-  }
-  .connect-privacy-row { display:flex; align-items:center; gap:7px; font-size:11px; color:var(--gray); }
-  .connect-privacy-row span { font-size:13px; }
-  .name-input {
-    width:100%; background:var(--panel); border:1px solid var(--border); border-radius:var(--r);
-    padding:11px 14px; color:var(--white); font-family:'Syne',sans-serif; font-size:14px;
-    outline:none; margin-bottom:10px; transition:border-color 0.2s;
-  }
-  .name-input:focus { border-color:var(--wave-dim); }
-  .name-input::placeholder { color:var(--gray2); }
-  .join-btn {
-    width:100%; padding:12px; background:linear-gradient(135deg,var(--wave),#0055cc);
-    border:none; border-radius:var(--r); color:white;
-    font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
-    cursor:pointer; transition:all 0.2s; letter-spacing:0.02em;
-  }
-  .join-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,119,255,0.4); }
-  .connect-status { font-family:'Syne Mono',monospace; font-size:12px; color:var(--gray); margin-top:10px; min-height:16px; }
-  .connect-status.connecting { color:var(--gold); }
-  .connect-status.success    { color:var(--green); }
-  .connect-status.error      { color:var(--red); }
-
-  /* TOAST */
-  .toast {
-    position:fixed; bottom:28px; right:20px; padding:11px 18px;
-    background:var(--panel); border:1px solid var(--border); border-left:3px solid var(--wave);
-    border-radius:var(--r); font-size:13px; color:var(--white); z-index:999;
-    opacity:0; transform:translateY(8px); transition:all 0.3s; pointer-events:none; max-width:270px;
-  }
-  .toast.show { opacity:1; transform:translateY(0); }
-  .toast.success { border-left-color:var(--green); }
-  .toast.error   { border-left-color:var(--red); }
-
-  /* FOOTER */
+  /* ── ORIGIN STRIP ── */
   .origin-strip {
-    text-align:center; padding:4px; font-family:'Syne Mono',monospace;
-    font-size:10px; color:var(--gray2); border-top:1px solid var(--border);
-    background:rgba(8,14,26,0.95); letter-spacing:0.1em; flex-shrink:0;
+    text-align:center; font-family:'Syne Mono',monospace; font-size:9px;
+    color:var(--gray2); padding:5px; letter-spacing:0.12em;
+    background:rgba(8,14,26,0.95); flex-shrink:0;
   }
   .origin-strip span { color:var(--wave-dim); }
 
-  .max-btn {
-    padding:8px; background:var(--panel); border:1px solid var(--border);
-    border-radius:8px; color:var(--gray); font-family:'Syne',sans-serif;
-    font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s;
+  /* ── TOAST ── */
+  .toast {
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
+    padding:10px 18px; font-size:13px; font-weight:600;
+    box-shadow:0 8px 32px rgba(0,0,0,0.5); z-index:500;
+    opacity:0; transition:all 0.3s; pointer-events:none; white-space:nowrap;
   }
-  .max-btn.active { background:rgba(0,119,255,0.15); border-color:var(--wave); color:var(--wave2); }
-  .max-btn:hover { border-color:var(--wave-dim); color:var(--wave2); }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.show.success { border-color:rgba(0,232,150,0.4); color:var(--green); }
+  .toast.show.error   { border-color:rgba(255,68,85,0.4); color:var(--red); }
 
-  .share-fab { display:none !important; }
-  .wave-typing-anim {
-    display:inline-block;
-    animation:waveflow 1.2s ease-in-out infinite;
-    font-size:16px; letter-spacing:2px;
-  }
-  @keyframes waveflow {
-    0%,100% { opacity:0.4; transform:translateY(0); }
-    50% { opacity:1; transform:translateY(-3px); }
-  }
-  .share-in-input { display:flex; }
-
-  /* MOBILE SHARE MODAL */
-  #share-modal {
-    display:none; position:fixed; inset:0; background:rgba(4,8,15,0.92);
-    z-index:200; align-items:flex-start; justify-content:center; 
-    backdrop-filter:blur(8px); padding-top:10vh; overflow-y:auto;
-  }
-  #share-modal.show { display:flex; }
-  .share-card {
-    background:var(--surface); border:1px solid var(--border); border-radius:20px;
-    padding:32px 24px; text-align:center; max-width:340px; width:92%;
-    box-shadow:0 0 60px rgba(0,119,255,0.15);
-  }
-  .share-wave-icon { font-size:44px; margin-bottom:12px; animation:wavehand 2s ease-in-out infinite; }
-  .share-title { font-size:22px; font-weight:800; margin-bottom:6px; }
-  .share-title span { background:linear-gradient(90deg,var(--wave2),var(--wave)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-  .share-sub { font-size:13px; color:var(--gray); margin-bottom:20px; line-height:1.5; }
-  .share-id-box {
-    background:var(--panel); border:1px solid var(--border); border-radius:10px;
-    padding:10px 12px; font-family:'Syne Mono',monospace; font-size:11px;
-    color:var(--wave2); word-break:break-all; margin-bottom:12px; text-align:left;
-  }
-  .share-copy-btn {
-    width:100%; padding:13px; background:linear-gradient(135deg,var(--wave),#0055cc);
-    border:none; border-radius:10px; color:white; font-family:'Syne',sans-serif;
-    font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s; margin-bottom:8px;
-    display:flex; align-items:center; justify-content:center; gap:8px;
-  }
-  .share-copy-btn.copied { background:linear-gradient(135deg,var(--green),#00aa66); }
-  .share-copy-btn:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,119,255,0.4); }
-  .share-whatsapp-btn {
-    width:100%; padding:11px; background:rgba(37,211,102,0.12);
-    border:1px solid rgba(37,211,102,0.3); border-radius:10px; color:#25d366;
-    font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
-    cursor:pointer; transition:all 0.2s; margin-bottom:8px;
-    display:flex; align-items:center; justify-content:center; gap:8px;
-  }
-  .share-whatsapp-btn:hover { background:rgba(37,211,102,0.2); }
-  .share-dismiss { font-size:12px; color:var(--gray); cursor:pointer; margin-top:6px; display:block; }
-  .share-dismiss:hover { color:var(--white); }
-
-  /* CLOSE/LEAVE WAVE BUTTON */
-  .end-wave-btn {
-    width:100%; padding:11px; margin-top:4px;
-    background:rgba(255,68,85,0.1); border:1px solid rgba(255,68,85,0.4);
-    border-radius:var(--r); color:var(--red);
-    font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
-    letter-spacing:0.03em; cursor:pointer; transition:all 0.2s;
-    display:flex !important; align-items:center; justify-content:center; gap:6px;
-    visibility:visible !important; opacity:1 !important;
-  }
-  .end-wave-btn:hover { background:rgba(255,68,85,0.22); border-color:var(--red); box-shadow:0 0 12px rgba(255,68,85,0.2); }
-
-  /* CONFIRM MODAL */
-  #confirm-modal {
-    display:none; position:fixed; inset:0; background:rgba(4,8,15,0.92);
-    z-index:210; align-items:flex-start; justify-content:center;
-    backdrop-filter:blur(8px); padding-top:14vh; overflow-y:auto;
-  }
-  #confirm-modal.show { display:flex; }
-  .confirm-card {
-    background:var(--surface); border:1px solid var(--border); border-radius:20px;
-    padding:28px 22px; text-align:center; max-width:320px; width:90%;
-    box-shadow:0 0 60px rgba(255,68,85,0.12);
-  }
-  .confirm-icon { font-size:38px; margin-bottom:10px; }
-  .confirm-title { font-size:18px; font-weight:800; margin-bottom:8px; color:var(--white); }
-  .confirm-sub { font-size:13px; color:var(--gray); margin-bottom:20px; line-height:1.6; }
-  .confirm-btn-danger {
-    width:100%; padding:12px; background:linear-gradient(135deg,var(--red),#cc2233);
-    border:none; border-radius:10px; color:white; font-family:'Syne',sans-serif;
-    font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s; margin-bottom:8px;
-  }
-  .confirm-btn-danger:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(255,68,85,0.35); }
-  .confirm-dismiss { font-size:12px; color:var(--gray); cursor:pointer; margin-top:6px; display:block; }
-  .confirm-dismiss:hover { color:var(--white); }
-
-  /* WAVE CLOSED SCREEN */
-  .wave-closed-blip { text-align:center; padding:36px 20px; color:var(--gray); animation:fadeIn 0.8s ease; margin:auto; width:100%; max-width:480px; align-self:center; }
-  .wave-closed-icon { font-size:46px; margin-bottom:10px; }
-  .wave-closed-title { font-size:21px; font-weight:800; color:var(--white); margin-bottom:5px; }
-  .wave-closed-sub { font-size:13px; line-height:1.6; }
-
-  /* HOST NAME MODAL */
-  #host-name-modal {
-    display:none; position:fixed; inset:0; background:rgba(4,8,15,0.92);
-    z-index:300; align-items:flex-start; justify-content:center; 
-    backdrop-filter:blur(8px); padding-top:15vh; overflow-y:auto;
-  }
-  #host-name-modal.show { display:flex; }
-
-  /* MOBILE SHARE FAB */
-  .share-fab {
-    display:none; position:fixed; bottom:80px; right:16px; z-index:50;
-    width:48px; height:48px; border-radius:50%;
-    background:linear-gradient(135deg,var(--wave),#0055cc);
-    border:none; color:white; font-size:20px; cursor:pointer;
-    box-shadow:0 4px 20px rgba(0,119,255,0.5); transition:all 0.2s;
-    align-items:center; justify-content:center;
-  }
-  .share-fab:hover { transform:scale(1.1); }
-
-  /* SIDEBAR TOGGLE */
-  .sidebar-toggle {
-    display:none; width:36px; height:36px; border-radius:8px;
-    background:var(--panel); border:1px solid var(--border);
-    color:var(--gray); font-size:16px; cursor:pointer;
-    align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0;
-  }
-  .sidebar-toggle:hover { border-color:var(--wave-dim); color:var(--wave2); }
-
-  .sidebar-overlay {
-    display:none; position:fixed; top:54px; left:0; right:0; bottom:0;
-    background:rgba(4,8,15,0.35);
-    z-index:40;
-  }
-  .sidebar-overlay.show { display:block; }
-
-  /* Desktop: hide hamburger toggle, sidebar close button, overlay */
-  @media (min-width:769px) {
-    .sidebar-toggle { display:none !important; }
-    .sidebar-overlay { display:none !important; }
-    .sidebar-menu-close { display:none !important; }
-  }
-
-  @media (max-width:768px) {
-    .sidebar {
-      position:fixed; left:-100%; top:54px; bottom:0; z-index:50;
-      transition:left 0.3s ease; width:85%; max-width:300px; box-shadow:4px 0 30px rgba(0,0,0,0.5);
-      background:var(--surface); overflow-y:auto;
-    }
-    .sidebar.open { left:0; }
-    .sidebar-overlay { display:none; }
-    .sidebar-overlay.show { display:block; }
-    .blip, .file-blip { max-width:88%; }
-    .sidebar-toggle { display:flex; }
-    .connect-card { padding:24px 18px; width:94%; border-radius:14px; }
-    .connect-icon { font-size:36px; margin-bottom:8px; }
-    .connect-title { font-size:20px; }
-    .share-card { padding:24px 18px; width:94%; }
-    .topbar { padding:0 10px; gap:8px; }
-    .logo-text { font-size:18px; }
-    .logo-sub { display:none; }
-    .enc-badge { padding:3px 8px; font-size:9px; }
-    .status-pill { padding:4px 8px; font-size:10px; }
-    .input-area { padding:10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
-    .blips { padding:12px; }
-  }
-
-  /* ── PRO BADGE ── */
-  .pro-badge {
-    display:inline-flex; align-items:center; gap:5px; padding:3px 9px;
-    background:linear-gradient(135deg,rgba(240,165,0,0.15),rgba(240,165,0,0.05));
-    border:1px solid rgba(240,165,0,0.4); border-radius:20px;
-    font-family:'Syne Mono',monospace; font-size:9px; color:var(--gold);
-    letter-spacing:0.1em; cursor:pointer; transition:all 0.2s;
-  }
-  .pro-badge:hover { background:rgba(240,165,0,0.2); border-color:var(--gold); }
-  .pro-badge-dot { width:5px; height:5px; border-radius:50%; background:var(--gold); box-shadow:0 0 5px var(--gold); }
-
-  /* ── PRO MODAL ── */
-  #pro-modal {
-    display:none; position:fixed; inset:0; background:rgba(4,8,15,0.93);
-    z-index:400; align-items:flex-start; justify-content:center;
-    backdrop-filter:blur(10px); padding-top:8vh; overflow-y:auto;
-  }
-  #pro-modal.show { display:flex; }
-  .pro-card {
-    background:var(--surface); border:1px solid rgba(240,165,0,0.3);
-    border-radius:20px; padding:32px 24px; max-width:360px; width:92%;
-    box-shadow:0 0 60px rgba(240,165,0,0.1); position:relative;
-  }
-  .pro-glow {
-    position:absolute; top:-1px; left:10%; right:10%; height:2px;
-    background:linear-gradient(90deg,transparent,var(--gold),transparent);
-    border-radius:2px;
-  }
-  .pro-icon { font-size:42px; text-align:center; margin-bottom:10px; }
-  .pro-title { font-size:22px; font-weight:800; text-align:center; margin-bottom:4px; }
-  .pro-title span { background:linear-gradient(90deg,var(--gold),#ffcc44); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-  .pro-sub { font-size:13px; color:var(--gray); text-align:center; margin-bottom:20px; line-height:1.5; }
-
-  .pro-features { display:flex; flex-direction:column; gap:8px; margin-bottom:22px; }
-  .pro-feat {
-    display:flex; align-items:flex-start; gap:10px; padding:10px 12px;
-    background:rgba(240,165,0,0.05); border:1px solid rgba(240,165,0,0.12);
-    border-radius:10px;
-  }
-  .pro-feat-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
-  .pro-feat-text { font-size:12px; color:var(--white); line-height:1.4; }
-  .pro-feat-text strong { color:var(--gold); display:block; margin-bottom:2px; font-size:13px; }
-
-  .pro-divider { border:none; border-top:1px solid var(--border); margin:18px 0; }
-
-  .pro-activate-label {
-    font-size:11px; color:var(--gray); letter-spacing:0.12em;
-    font-family:'Syne Mono',monospace; margin-bottom:8px; text-transform:uppercase;
-  }
-  .pro-key-input {
-    width:100%; background:var(--panel); border:1px solid var(--border);
-    border-radius:10px; padding:11px 14px; color:var(--wave2);
-    font-family:'Syne Mono',monospace; font-size:13px; outline:none;
-    letter-spacing:0.08em; margin-bottom:10px; transition:border-color 0.2s;
-    text-transform:uppercase;
-  }
-  .pro-key-input:focus { border-color:var(--gold); }
-  .pro-key-input::placeholder { color:var(--gray2); text-transform:none; letter-spacing:0; }
-  .pro-activate-btn {
-    width:100%; padding:12px; border:none; border-radius:10px;
-    background:linear-gradient(135deg,var(--gold),#cc8800);
-    color:#0a0600; font-family:'Syne',sans-serif; font-size:14px;
-    font-weight:800; cursor:pointer; transition:all 0.2s; letter-spacing:0.03em;
-    margin-bottom:8px;
-  }
-  .pro-activate-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(240,165,0,0.35); }
-  .pro-status { font-family:'Syne Mono',monospace; font-size:12px; text-align:center; min-height:16px; margin-bottom:8px; }
-  .pro-status.success { color:var(--green); }
-  .pro-status.error   { color:var(--red); }
-
-  .pro-get-link {
-    display:flex; align-items:center; justify-content:center; gap:6px;
-    width:100%; padding:11px; border:1px solid rgba(240,165,0,0.3);
-    border-radius:10px; background:transparent; color:var(--gold);
-    font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
-    cursor:pointer; text-decoration:none; transition:all 0.2s; margin-bottom:8px;
-  }
-  .pro-get-link:hover { background:rgba(240,165,0,0.08); border-color:var(--gold); }
-  .pro-dismiss { font-size:12px; color:var(--gray); cursor:pointer; text-align:center; display:block; }
-  .pro-dismiss:hover { color:var(--white); }
-
-  /* ── PRO ACTIVE STATE in sidebar ── */
-  .pro-active-banner {
-    display:none; align-items:center; gap:8px; padding:8px 12px;
-    background:rgba(240,165,0,0.08); border:1px solid rgba(240,165,0,0.2);
-    border-radius:10px; margin-top:8px;
-  }
-  .pro-active-banner.show { display:flex; }
-  .pro-active-icon { font-size:16px; }
-  .pro-active-text { font-size:11px; color:var(--gold); font-family:'Syne Mono',monospace; }
-
-  /* ── WAVE COLOR PICKER ── */
-  .wave-color-section { padding:12px 16px; border-bottom:1px solid var(--border); }
-  .wave-color-label {
-    font-size:10px; letter-spacing:0.15em; text-transform:uppercase;
-    color:var(--gray); margin-bottom:9px; font-family:'Syne Mono',monospace;
-  }
-  .wave-color-swatches { display:flex; gap:7px; flex-wrap:wrap; }
-  .wave-swatch {
-    width:26px; height:26px; border-radius:50%; cursor:pointer;
-    border:2px solid transparent; transition:all 0.2s; flex-shrink:0;
-  }
-  .wave-swatch:hover { transform:scale(1.15); }
-  .wave-swatch.active { border-color:var(--white); box-shadow:0 0 8px rgba(255,255,255,0.4); transform:scale(1.15); }
-
-  /* ── FREE TIER LIMIT WARNING ── */
-  .limit-banner {
-    display:none; align-items:center; gap:8px; padding:7px 14px;
-    background:rgba(255,68,85,0.08); border-top:1px solid rgba(255,68,85,0.2);
-    font-size:11px; color:var(--red); font-family:'Syne Mono',monospace;
-    cursor:pointer; flex-shrink:0; letter-spacing:0.04em;
-  }
-  .limit-banner.show { display:flex; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 </style>
 </head>
 <body>
 <div class="bg-waves"></div>
 
-<!-- HOST NAME MODAL -->
-<div id="host-name-modal">
-  <div class="connect-card">
-    <div class="connect-icon">🌊</div>
-    <div class="connect-title">Start a <span>Wave</span></div>
-    <div class="connect-sub">Configure your private Wave before opening it.</div>
-
-    <div class="section-label" style="text-align:left;font-size:11px;color:var(--gray);letter-spacing:2px;margin-bottom:6px;">YOUR NAME</div>
-    <input class="name-input" id="host-name-input" type="text" placeholder="Your name..." maxlength="20" />
-
-    <div class="section-label" style="text-align:left;font-size:11px;color:var(--gray);letter-spacing:2px;margin:12px 0 6px;">MAX PARTICIPANTS</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px;">
-      <button class="max-btn active" onclick="selectMax(this,2)">2</button>
-      <button class="max-btn" onclick="selectMax(this,5)" id="max-btn-5">5</button>
-      <button class="max-btn" onclick="selectMax(this,10)" id="max-btn-10">10</button>
-      <button class="max-btn" onclick="selectMax(this,0)" id="max-btn-inf">∞</button>
-    </div>
-    <div id="max-free-note" style="font-size:11px;color:var(--gold);font-family:'Syne Mono',monospace;margin-bottom:10px;text-align:center;cursor:pointer;" onclick="openProModal()">🌊 5, 10, ∞ require Pro →</div>
-
-    <div class="section-label" style="text-align:left;font-size:11px;color:var(--gray);letter-spacing:2px;margin-bottom:6px;">PASSWORD <span style="color:var(--gray2);font-size:10px;">(optional)</span></div>
-    <input class="name-input" id="host-password-input" type="password" placeholder="Leave empty for no password..." maxlength="32" style="margin-bottom:16px;" />
-
-    <button class="join-btn" onclick="hostStart()">🌊 Open Wave</button>
-  </div>
-</div>
-
-<!-- CONFIRM CLOSE/LEAVE MODAL -->
-<div id="confirm-modal">
-  <div class="confirm-card">
-    <div class="confirm-icon" id="confirm-icon">⚠️</div>
-    <div class="confirm-title" id="confirm-title">Close this Wave?</div>
-    <div class="confirm-sub" id="confirm-sub">
-      Everyone connected will be disconnected immediately. This can't be undone — you'd need to start a new Wave.
-    </div>
-    <button class="confirm-btn-danger" id="confirm-btn" onclick="confirmEndWave()">Yes, close it</button>
-    <span class="confirm-dismiss" onclick="closeConfirmModal()">Cancel</span>
-  </div>
-</div>
-
-<!-- SHARE MODAL -->
-<div id="share-modal">
-  <div class="share-card">
-    <div class="share-wave-icon">🌊</div>
-    <div class="share-title">Share Your <span>Wave</span></div>
-    <div class="share-sub">Send this link to invite someone. They connect directly — no server involved.</div>
-    <div class="share-id-box" id="share-id-display">Generating...</div>
-    <button class="share-copy-btn" id="share-copy-btn" onclick="shareModalCopy()">🔗 Copy Invite Link</button>
-    <button class="share-whatsapp-btn" onclick="shareWhatsApp()">📲 Share via WhatsApp</button>
-    <span class="share-dismiss" onclick="closeShareModal()">I'll share it later →</span>
-  </div>
-</div>
-
-<!-- PRO MODAL -->
-<div id="pro-modal">
-  <div class="pro-card">
-    <div class="pro-glow"></div>
-    <div class="pro-icon">🌊</div>
-    <div class="pro-title">NeoWave <span>Pro</span></div>
-    <div class="pro-sub">Unlock the full Wave. No subscriptions — one key, forever.</div>
-
-    <div class="pro-features">
-      <div class="pro-feat">
-        <div class="pro-feat-icon">⏱️</div>
-        <div class="pro-feat-text">
-          <strong>Unlimited Session Time</strong>
-          Free: 2-hour max · Pro: waves stay open as long as you need
-        </div>
-      </div>
-      <div class="pro-feat">
-        <div class="pro-feat-icon">📁</div>
-        <div class="pro-feat-text">
-          <strong>Large File Transfers</strong>
-          Free: 10MB cap · Pro: up to 100MB per file
-        </div>
-      </div>
-      <div class="pro-feat">
-        <div class="pro-feat-icon">👥</div>
-        <div class="pro-feat-text">
-          <strong>Full Participant Control</strong>
-          Free: max 2 people · Pro: 2, 5, 10, or unlimited
-        </div>
-      </div>
-      <div class="pro-feat">
-        <div class="pro-feat-icon">🔑</div>
-        <div class="pro-feat-text">
-          <strong>One-time License Key</strong>
-          Pay once on Gumroad · activate on any browser · never expires
-        </div>
-      </div>
-    </div>
-
-    <hr class="pro-divider">
-
-    <div class="pro-activate-label">Already have a key?</div>
-    <input class="pro-key-input" id="pro-key-input" type="text" placeholder="NW-XXXX-XXXX-XXXX-XXXX" maxlength="24" />
-    <div class="pro-status" id="pro-status"></div>
-    <button class="pro-activate-btn" onclick="activateLicense()">🌊 Activate Pro</button>
-    <a class="pro-get-link" href="https://neowave.genesisvault.xyz/buy.html" target="_blank" rel="noopener">🛒 Get a License Key →</a>
-    <span class="pro-dismiss" onclick="closeProModal()">Maybe later</span>
-  </div>
-</div>
-
-<!-- SIDEBAR OVERLAY -->
-<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<!-- ══ CONNECT SCREEN ══ -->
 <div id="connect-screen">
   <div class="bg-waves"></div>
-  <div class="connect-card">
+
+  <!-- STEP 1: Role select -->
+  <div class="connect-card" id="step-role">
     <div class="connect-icon">🌊</div>
-    <div class="connect-title">Join <span>NeoWave</span></div>
-    <div class="connect-sub">Private peer-to-peer chat. No servers. No spying.</div>
+    <div class="connect-title">NeoWave</div>
+    <div class="connect-sub">Pure P2P. No servers. No logs. Ever.</div>
     <div class="connect-privacy">
-      <div class="connect-privacy-row"><span>🔒</span> End-to-end encrypted connection</div>
-      <div class="connect-privacy-row"><span>👁️</span> Zero servers — direct device to device</div>
-      <div class="connect-privacy-row"><span>💨</span> Nothing stored anywhere</div>
-      <div class="connect-privacy-row"><span>📁</span> Files transfer peer-to-peer too</div>
+      <div class="connect-privacy-row"><span>🔒</span> End-to-end encrypted via WebRTC DTLS</div>
+      <div class="connect-privacy-row"><span>👁️</span> Zero servers touched at any point</div>
+      <div class="connect-privacy-row"><span>💨</span> Nothing stored anywhere, ever</div>
     </div>
-    <input class="name-input" id="guest-name" type="text" placeholder="Your name..." maxlength="20" />
-    <input class="name-input" id="guest-password" type="password" placeholder="Password (if required)..." maxlength="32" style="margin-bottom:4px;" />
-    <button class="join-btn" onclick="guestJoin()">🌊 Join Wave</button>
-    <div class="connect-status" id="connect-status"></div>
+    <input class="name-input" id="my-name-input" type="text" placeholder="Your name (optional)..." maxlength="20" />
+    <button class="join-btn" onclick="startAsHost()">🌊 Start a Wave</button>
+    <button class="join-btn secondary" onclick="showJoinStep()">🔗 Join a Wave</button>
+  </div>
+
+  <!-- STEP 2A: Host — share Wave Code, receive Answer Code -->
+  <div class="connect-card" id="step-host-offer" style="display:none">
+    <div class="connect-icon" style="font-size:32px">📡</div>
+    <div class="connect-title" style="font-size:20px">Share your <span style="-webkit-text-fill-color:var(--wave2)">Wave Code</span></div>
+    <div class="connect-sub">Send this code to the person joining — any channel works.</div>
+    <div class="step-label">Your Wave Code</div>
+    <textarea id="offer-code-box" class="code-textarea" readonly placeholder="Generating..."></textarea>
+    <button class="join-btn" style="margin-bottom:16px" onclick="copyOfferCode()">⎘ Copy Wave Code</button>
+    <div class="step-label">Once they send back an Answer Code, paste it here</div>
+    <textarea id="answer-input" class="code-textarea input" placeholder="Paste Answer Code here..."></textarea>
+    <button class="join-btn" onclick="hostFinalizeConnection()">🔗 Connect</button>
+    <div class="connect-status" id="connect-status-host"></div>
+  </div>
+
+  <!-- STEP 2B: Guest — paste Wave Code, get Answer Code -->
+  <div class="connect-card" id="step-guest-join" style="display:none">
+    <div class="connect-icon" style="font-size:32px">🔗</div>
+    <div class="connect-title" style="font-size:20px">Paste <span style="-webkit-text-fill-color:var(--wave2)">Wave Code</span></div>
+    <div class="connect-sub">Paste the Wave Code from the person who started this wave.</div>
+    <div class="step-label">Wave Code from host</div>
+    <textarea id="offer-input" class="code-textarea input" placeholder="Paste Wave Code here..."></textarea>
+    <button class="join-btn" onclick="guestGenerateAnswer()">⚡ Generate Answer Code</button>
+    <div id="answer-output-wrap" style="display:none;margin-top:16px">
+      <div class="step-label">Send this Answer Code back to the host</div>
+      <textarea id="answer-code-box" class="code-textarea" readonly></textarea>
+      <button class="join-btn" onclick="copyAnswerCode()">⎘ Copy Answer Code</button>
+      <div class="waiting-note">⏳ Waiting for host to finalize...</div>
+    </div>
+    <div class="connect-status" id="connect-status-guest"></div>
   </div>
 </div>
 
-<!-- APP SHELL (desktop sizing wrapper) -->
+<!-- ══ APP SHELL ══ -->
 <div class="app-shell">
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <button class="sidebar-toggle" onclick="toggleSidebar()" title="Menu">☰</button>
-  <div class="logo">
-    <div class="logo-icon">🌊</div>
-    <div>
-      <div class="logo-text">NeoWave</div>
-      <div class="logo-sub">Private P2P Messenger</div>
-    </div>
-  </div>
-  <div class="topbar-spacer"></div>
-  <div class="enc-badge"><div class="enc-dot"></div> P2P ENCRYPTED</div>
-  <div class="pro-badge" id="pro-topbar-badge" onclick="openProModal()" title="Upgrade to Pro">
-    <div class="pro-badge-dot"></div>
-    <span id="pro-badge-label">PRO</span>
-  </div>
-  <div class="status-pill">
-    <div class="status-dot" id="status-dot"></div>
-    <span id="status-text">Initializing...</span>
-  </div>
-</div>
-
-<!-- FREE TIER LIMIT BANNER -->
-<div class="limit-banner" id="limit-banner" onclick="openProModal()">
-  ⚠️ <span id="limit-banner-text">Free tier limit reached — upgrade to Pro to unlock</span> →
-</div>
-
-<!-- MAIN -->
-<div class="main">
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="sidebar-section sidebar-menu-close" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px">
-      <div style="font-size:12px;color:var(--gray);font-family:'Syne Mono',monospace;letter-spacing:0.1em">MENU</div>
-      <button onclick="closeSidebar()" style="background:var(--panel);border:1px solid var(--border);color:var(--gray);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:13px;">✕ Close</button>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">Your Wave ID</div>
-      <div class="wave-id-box loading" id="wave-id-display">connecting...</div>
-      <input class="invite-input" id="invite-input" type="text" readonly placeholder="Generating link..." onclick="this.select()" />
-      <button class="copy-btn" id="copy-btn" onclick="copyLink()">🔗 Copy Invite Link</button>
-      <div class="copy-hint">Tap the link above to select it, or use Copy button.</div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">Privacy Shield</div>
-      <div class="privacy-stats">
-        <div class="pstat"><span class="pstat-icon">🔒</span><span>Messages: <strong>P2P only</strong></span></div>
-        <div class="pstat"><span class="pstat-icon">📁</span><span>Files: <strong>P2P direct</strong></span></div>
-        <div class="pstat"><span class="pstat-icon">🗄️</span><span>Server storage: <strong>None</strong></span></div>
-        <div class="pstat"><span class="pstat-icon">👁️</span><span>Surveillance: <strong>Zero</strong></span></div>
-      </div>
-      <div class="pro-active-banner" id="pro-active-banner">
-        <div class="pro-active-icon">🌊</div>
-        <div class="pro-active-text">PRO ACTIVE — All limits unlocked</div>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="logo">
+      <div class="logo-icon">🌊</div>
+      <div>
+        <div class="logo-text">NeoWave</div>
+        <div class="logo-sub">Private P2P Messenger</div>
       </div>
     </div>
-    <!-- WAVE COLOR PICKER -->
-    <div class="wave-color-section">
-      <div class="wave-color-label">Wave Color</div>
-      <div class="wave-color-swatches" id="wave-color-swatches">
-        <div class="wave-swatch" data-wave="#0077ff" data-wave2="#00c8ff" style="background:linear-gradient(135deg,#0077ff,#00c8ff)" title="Ocean (default)"></div>
-        <div class="wave-swatch" data-wave="#7c3aed" data-wave2="#a78bfa" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)" title="Violet"></div>
-        <div class="wave-swatch" data-wave="#059669" data-wave2="#34d399" style="background:linear-gradient(135deg,#059669,#34d399)" title="Emerald"></div>
-        <div class="wave-swatch" data-wave="#dc2626" data-wave2="#f87171" style="background:linear-gradient(135deg,#dc2626,#f87171)" title="Crimson"></div>
-        <div class="wave-swatch" data-wave="#d97706" data-wave2="#fbbf24" style="background:linear-gradient(135deg,#d97706,#fbbf24)" title="Amber"></div>
-        <div class="wave-swatch" data-wave="#db2777" data-wave2="#f472b6" style="background:linear-gradient(135deg,#db2777,#f472b6)" title="Rose"></div>
-        <div class="wave-swatch" data-wave="#0891b2" data-wave2="#22d3ee" style="background:linear-gradient(135deg,#0891b2,#22d3ee)" title="Cyan"></div>
-      </div>
+    <div class="topbar-spacer"></div>
+    <div class="enc-badge"><div class="enc-dot"></div> P2P ENCRYPTED</div>
+    <div class="status-pill">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Not connected</span>
     </div>
-    <div class="sidebar-section">
-      <button class="end-wave-btn" id="end-wave-btn" onclick="openConfirmModal()">✕ Close Wave</button>
-    </div>
-    <div class="sidebar-section" style="padding-bottom:8px">
-      <div class="sidebar-label">Participants (<span id="peer-count">0</span>)</div>
-    </div>
-    <div class="participants" id="participants-list"></div>
   </div>
 
-  <!-- WAVE AREA -->
-  <div class="wave-area">
-    <div class="blips empty" id="blips">
-      <div class="welcome-blip" id="welcome-blip">
-        <div class="welcome-wave">🌊</div>
-        <div class="welcome-title">Your Wave is open</div>
-        <div class="welcome-sub">Copy the invite link and share it.<br>Messages and files go direct — no server sees them.</div>
-        <div class="welcome-privacy">🔒 Zero surveillance · Pure P2P</div>
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Connection</div>
+        <div class="wave-id-box" id="wave-id-display">—</div>
+        <button class="action-btn" onclick="newWave()">+ New Wave</button>
+        <div class="copy-hint">Manual SDP exchange — zero servers involved.</div>
       </div>
-    </div>
-    <div class="typing-indicator" id="typing-indicator">
-      <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
-    </div>
-    <div class="input-area">
-      <div class="input-row">
-        <div class="input-wrap">
-          <button class="attach-btn" onclick="document.getElementById('file-input').click()" title="Send file">📎</button>
-          <button class="attach-btn share-in-input" onclick="openShareModal()" title="Share Wave">🔗</button>
-          <input type="file" id="file-input" onchange="handleFileSelect(event)" />
-          <textarea id="message-input" rows="1" placeholder="Write a blip..." oninput="onInput(event)" onkeydown="onKeyDown(event)"></textarea>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Privacy Shield</div>
+        <div class="privacy-stats">
+          <div class="pstat"><span class="pstat-icon">🔒</span><span>Messages: <strong>P2P only</strong></span></div>
+          <div class="pstat"><span class="pstat-icon">📁</span><span>Files: <strong>P2P direct</strong></span></div>
+          <div class="pstat"><span class="pstat-icon">🗄️</span><span>Server storage: <strong>None</strong></span></div>
+          <div class="pstat"><span class="pstat-icon">👁️</span><span>Surveillance: <strong>Zero</strong></span></div>
         </div>
-        <button class="send-btn" onclick="sendMessage()" title="Send">➤</button>
       </div>
-      <div class="input-hint">
-        Enter to send · Shift+Enter newline ·
-        <span class="live-badge"><span class="live-dot"></span>LIVE TYPING</span> ·
-        <span class="p2p-badge">🔒 P2P</span>
+      <div class="sidebar-section" style="padding-bottom:8px">
+        <div class="sidebar-label">Participants (<span id="peer-count">0</span>)</div>
+      </div>
+      <div class="participants" id="participants-list"></div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- WAVE AREA -->
+    <div class="wave-area">
+      <div class="blips" id="blips">
+        <div class="welcome-blip" id="welcome-blip">
+          <div class="welcome-wave">🌊</div>
+          <div class="welcome-title">Your Wave is open</div>
+          <div class="welcome-sub">Exchange codes manually — no server ever involved.<br>Messages and files go direct between peers.</div>
+          <div class="welcome-privacy">🔒 Zero surveillance · Pure P2P</div>
+        </div>
+      </div>
+      <div class="typing-indicator" id="typing-indicator">
+        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+      </div>
+      <div class="input-area">
+        <div class="input-row">
+          <div class="input-wrap">
+            <button class="attach-btn" onclick="document.getElementById('file-input').click()" title="Send file">📎</button>
+            <input type="file" id="file-input" onchange="handleFileSelect(event)" />
+            <textarea id="message-input" rows="1" placeholder="Write a blip..." oninput="onInput(event)" onkeydown="onKeyDown(event)"></textarea>
+          </div>
+          <button class="send-btn" onclick="sendMessage()" title="Send">➤</button>
+        </div>
+        <div class="input-hint">
+          Enter to send · Shift+Enter newline ·
+          <span class="live-badge"><span class="live-dot"></span>LIVE TYPING</span> ·
+          <span class="p2p-badge">🔒 P2P</span>
+        </div>
       </div>
     </div>
   </div>
+
+  <div class="origin-strip">NEOWAVE // <span>PRIVATE P2P MESSENGER</span> // NO SERVERS · NO SURVEILLANCE · BY <span>GENESIS GROUP</span></div>
 </div>
 
-<div class="origin-strip">NEOWAVE // <span>PRIVATE P2P MESSENGER</span> // NO SERVERS · NO SURVEILLANCE · CREATED BY <span>GENESIS GROUP</span></div>
-
-</div><!-- /app-shell -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -952,218 +549,207 @@
 // ══════════════════════════════════════
 const COLORS = ['#0077ff','#00c8ff','#f0a500','#00e896','#ff6090','#aa77ff','#ff9040'];
 const NAMES  = ['Wavelet','Surge','Ripple','Tide','Current','Drift','Flow'];
-const CHUNK_SIZE = 4096; // 4KB chunks — more reliable on mobile P2P
+const CHUNK_SIZE = 16384; // 16KB chunks
 
-let myPeer   = null;
-let myId     = null;
 let myName   = 'Host';
 let myColor  = COLORS[0];
 let isHost   = true;
-let maxPeers = 2;
-let wavePassword = '';
 let connections  = {};
 let typingTimer  = null;
 let liveBlips    = {};
-let incomingFiles = {}; // fileId → { meta, chunks, received }
+let incomingFiles = {};
+
+// ── Native WebRTC state ──
+let localPC      = null;
+let remotePC     = null;
+let hostChannel  = null;
+let guestChannel = null;
+
+// STUN servers for NAT traversal — no TURN needed for most connections
+const RTC_CONFIG = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:stun3.l.google.com:19302' },
+  ]
+};
 
 // ══════════════════════════════════════
-//  DETECT HOST vs GUEST
+//  BOOT
 // ══════════════════════════════════════
-const urlParams  = new URLSearchParams(window.location.search);
-const hostPeerId = urlParams.get('wave');
-if (hostPeerId) { isHost = false; document.getElementById('connect-screen').classList.add('show'); }
-else { document.getElementById('host-name-modal').classList.add('show'); document.getElementById('host-name-input').focus(); }
+document.getElementById('connect-screen').classList.add('show');
+setStatus('waiting', 'Not connected');
 
 // ══════════════════════════════════════
-//  HOST NAME + START
+//  HOST FLOW
 // ══════════════════════════════════════
-function hostStart() {
-  const n = document.getElementById('host-name-input').value.trim();
-  const p = document.getElementById('host-password-input').value.trim();
-  myName = n || 'Host';
-  wavePassword = p;
-  document.getElementById('host-name-modal').classList.remove('show');
-  initHost();
-  startFreeSessionTimer();
-}
-document.getElementById('host-name-input')?.addEventListener('keydown', e => {
-  if (e.key === 'Enter') hostStart();
-});
-
-// ══════════════════════════════════════
-//  HOST
-// ══════════════════════════════════════
-let hostRetryCount = 0;
-const MAX_HOST_RETRIES = 3;
-
-function initHost() {
+async function startAsHost() {
+  const n = document.getElementById('my-name-input').value.trim();
+  myName  = n || 'Host';
   myColor = COLORS[0];
-  setStatus('waiting','Generating Wave ID...');
-  myPeer = new Peer(undefined, {
-    debug: 0,
-    config: {
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' }
-      ]
+  isHost  = true;
+
+  localPC = new RTCPeerConnection(RTC_CONFIG);
+  hostChannel = localPC.createDataChannel('wave', { ordered: true });
+  setupChannelHost(hostChannel);
+
+  // Collect all ICE candidates before encoding offer
+  localPC.onicecandidate = () => {};
+  localPC.onicegatheringstatechange = () => {
+    if (localPC.iceGatheringState === 'complete') {
+      const offer = localPC.localDescription;
+      const encoded = btoa(JSON.stringify({ sdp: offer.sdp, type: offer.type }));
+      document.getElementById('offer-code-box').value = encoded;
     }
-  });
-  myPeer.on('open', id => {
-    hostRetryCount = 0; // reset on success
-    myId = id;
-    document.getElementById('wave-id-display').textContent = id;
-    document.getElementById('wave-id-display').classList.remove('loading');
-    document.getElementById('invite-input').value = getInviteUrl();
-    document.getElementById('share-id-display').textContent = getInviteUrl();
-    setStatus('waiting','Waiting for guests');
-    addParticipant('me', myName, myColor, 'You (Host)');
-    showToast('Wave open! Share your invite link.','success');
-    // Auto-show share modal on mobile
-    if (window.innerWidth <= 600) openShareModal();
-  });
-  myPeer.on('connection', conn => {
-    conn.on('open', () => {
-      conn.send({ type:'WELCOME', name:myName, color:myColor,
-        peers: Object.entries(connections).map(([id,p])=>({ id, name:p.name, color:p.color })) });
-    });
-    conn.on('data',  data => handleData(data, conn.peer, conn));
-    conn.on('close', ()   => removePeer(conn.peer));
-    conn.on('error', ()   => removePeer(conn.peer));
-  });
-  myPeer.on('error', err => handleHostPeerError(err));
+  };
+
+  const offer = await localPC.createOffer();
+  await localPC.setLocalDescription(offer);
+
+  document.getElementById('step-role').style.display = 'none';
+  document.getElementById('step-host-offer').style.display = 'block';
+  addParticipant('me', myName, myColor, 'You (Host)');
+  setStatus('waiting', 'Waiting for guest...');
 }
 
-function handleHostPeerError(err) {
-  const retryable = (err.type === 'server-error' || err.type === 'network' || err.type === 'socket-error' || err.type === 'socket-closed');
-
-  if (retryable && hostRetryCount < MAX_HOST_RETRIES) {
-    hostRetryCount++;
-    const delay = hostRetryCount * 1500; // 1.5s, 3s, 4.5s
-    setStatus('waiting', `Connection issue — retrying (${hostRetryCount}/${MAX_HOST_RETRIES})...`);
-    document.getElementById('wave-id-display').textContent = 'reconnecting...';
-    document.getElementById('wave-id-display').classList.add('loading');
-    try { myPeer?.destroy(); } catch(e) {}
-    setTimeout(() => initHost(), delay);
-    return;
-  }
-
-  // Out of retries, or a non-retryable error
-  setStatus('offline', 'Connection failed');
-  document.getElementById('wave-id-display').textContent = 'Connection failed';
-  document.getElementById('wave-id-display').classList.remove('loading');
-  if (retryable) {
-    showToast('⚠️ Can\'t reach the connection server. Check your network and tap to retry.','error');
-    document.getElementById('wave-id-display').style.cursor = 'pointer';
-    document.getElementById('wave-id-display').onclick = () => {
-      hostRetryCount = 0;
-      document.getElementById('wave-id-display').onclick = null;
-      document.getElementById('wave-id-display').style.cursor = '';
-      initHost();
-    };
-    document.getElementById('wave-id-display').title = 'Tap to retry';
-  } else {
-    showToast('Error: '+err.type,'error');
+async function hostFinalizeConnection() {
+  const raw = document.getElementById('answer-input').value.trim();
+  if (!raw) { showToast('Paste the Answer Code first', 'error'); return; }
+  const statusEl = document.getElementById('connect-status-host');
+  try {
+    const { sdp, type } = JSON.parse(atob(raw));
+    await localPC.setRemoteDescription(new RTCSessionDescription({ sdp, type }));
+    statusEl.textContent = '✓ Connecting...';
+    statusEl.className = 'connect-status connecting';
+  } catch(e) {
+    statusEl.textContent = '✗ Invalid Answer Code. Check and try again.';
+    statusEl.className = 'connect-status error';
   }
 }
 
-// ══════════════════════════════════════
-//  GUEST
-// ══════════════════════════════════════
-let guestRetryCount = 0;
-const MAX_GUEST_RETRIES = 3;
+function setupChannelHost(ch) {
+  ch.onopen = () => {
+    ch.send(JSON.stringify({ type:'WELCOME', name:myName, color:myColor, peers:[] }));
+    document.getElementById('connect-screen').classList.remove('show');
+    setStatus('online', 'Wave connected');
+    document.getElementById('wave-id-display').textContent = 'Connected ✓';
+    showToast('🌊 Guest connected!', 'success');
+    addSystemBlip('Wave established 🌊');
+  };
+  ch.onmessage = e => handleData(JSON.parse(e.data), 'guest', ch);
+  ch.onclose   = () => removePeer('guest');
+  ch.onerror   = () => removePeer('guest');
+}
 
-function guestJoin() {
-  const n = document.getElementById('guest-name').value.trim();
+// ══════════════════════════════════════
+//  GUEST FLOW
+// ══════════════════════════════════════
+function showJoinStep() {
+  const n = document.getElementById('my-name-input').value.trim();
   myName  = n || NAMES[Math.floor(Math.random()*NAMES.length)];
   myColor = COLORS[Math.floor(Math.random()*(COLORS.length-1))+1];
-  const statusEl = document.getElementById('connect-status');
-  statusEl.textContent = 'Connecting...'; statusEl.className = 'connect-status connecting';
-  myPeer = new Peer(undefined, {
-    debug: 0,
-    config: {
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' }
-      ]
-    }
-  });
-  myPeer.on('open', id => {
-    guestRetryCount = 0; // reset on success
-    myId = id;
-    const conn = myPeer.connect(hostPeerId, { reliable:true });
-    conn.on('open', () => {
-      connections[hostPeerId] = { conn, name:'Host', color:COLORS[0] };
-      conn.send({ type:'JOIN', name:myName, color:myColor, password: document.getElementById('guest-password').value.trim() });
-      statusEl.textContent = '✓ Connected!'; statusEl.className = 'connect-status success';
-      setTimeout(() => {
+  isHost  = false;
+  document.getElementById('step-role').style.display = 'none';
+  document.getElementById('step-guest-join').style.display = 'block';
+}
+
+async function guestGenerateAnswer() {
+  const raw = document.getElementById('offer-input').value.trim();
+  const statusEl = document.getElementById('connect-status-guest');
+  if (!raw) { showToast('Paste the Wave Code first', 'error'); return; }
+
+  try {
+    const { sdp, type } = JSON.parse(atob(raw));
+    remotePC = new RTCPeerConnection(RTC_CONFIG);
+
+    remotePC.ondatachannel = e => {
+      guestChannel = e.channel;
+      guestChannel.onopen = () => {
+        guestChannel.send(JSON.stringify({ type:'JOIN', name:myName, color:myColor }));
         document.getElementById('connect-screen').classList.remove('show');
-        setStatus('online','Connected to Wave');
+        setStatus('online', 'Connected to Wave');
         updatePeerCount();
         addParticipant('me', myName, myColor, 'You');
-        addParticipant(hostPeerId,'Host',COLORS[0]);
-        document.getElementById('wave-id-display').textContent = myId.slice(0,22)+'...';
-        document.getElementById('invite-input').value = getInviteUrl();
+        addParticipant('host', 'Host', COLORS[0]);
+        connections['host'] = { channel: guestChannel, name:'Host', color:COLORS[0] };
+        document.getElementById('wave-id-display').textContent = 'Connected ✓';
         document.getElementById('welcome-blip').innerHTML = `
           <div class="welcome-wave">🌊</div>
           <div class="welcome-title">You're in!</div>
-          <div class="welcome-sub">Connection is private and peer-to-peer.</div>
-          <div class="welcome-privacy">🔒 No server between you</div>`;
-      }, 550);
-    });
-    conn.on('data',  data => handleData(data, hostPeerId, conn));
-    conn.on('close', ()   => { showToast('Host disconnected.','error'); setStatus('waiting','Disconnected'); });
-    conn.on('error', ()   => { statusEl.textContent='✗ Failed. Check the link.'; statusEl.className='connect-status error'; });
-  });
-  myPeer.on('error', err => handleGuestPeerError(err, statusEl));
+          <div class="welcome-sub">Direct P2P connection. No server between you.</div>
+          <div class="welcome-privacy">🔒 Zero surveillance</div>`;
+        showToast('🌊 Connected to Wave!', 'success');
+      };
+      guestChannel.onmessage = e => handleData(JSON.parse(e.data), 'host', guestChannel);
+      guestChannel.onclose   = () => { showToast('Host disconnected.', 'error'); setStatus('waiting','Disconnected'); };
+      guestChannel.onerror   = () => { showToast('Connection error.', 'error'); };
+    };
+
+    // Collect ICE candidates before encoding answer
+    remotePC.onicegatheringstatechange = () => {
+      if (remotePC.iceGatheringState === 'complete') {
+        const answer = remotePC.localDescription;
+        const encoded = btoa(JSON.stringify({ sdp: answer.sdp, type: answer.type }));
+        document.getElementById('answer-code-box').value = encoded;
+        document.getElementById('answer-output-wrap').style.display = 'block';
+        statusEl.textContent = 'Send this Answer Code to the host.';
+        statusEl.className = 'connect-status success';
+      }
+    };
+
+    await remotePC.setRemoteDescription(new RTCSessionDescription({ sdp, type }));
+    const answer = await remotePC.createAnswer();
+    await remotePC.setLocalDescription(answer);
+
+  } catch(e) {
+    statusEl.textContent = '✗ Invalid Wave Code. Check and try again.';
+    statusEl.className = 'connect-status error';
+  }
 }
 
-function handleGuestPeerError(err, statusEl) {
-  const retryable = (err.type === 'server-error' || err.type === 'network' || err.type === 'socket-error' || err.type === 'socket-closed');
+function copyOfferCode() {
+  const code = document.getElementById('offer-code-box').value;
+  if (!code) { showToast('Wave Code not ready yet...', ''); return; }
+  navigator.clipboard.writeText(code).then(() => showToast('✓ Wave Code copied!', 'success'));
+}
 
-  if (retryable && guestRetryCount < MAX_GUEST_RETRIES) {
-    guestRetryCount++;
-    const delay = guestRetryCount * 1500;
-    statusEl.textContent = `Connection issue — retrying (${guestRetryCount}/${MAX_GUEST_RETRIES})...`;
-    statusEl.className = 'connect-status connecting';
-    try { myPeer?.destroy(); } catch(e) {}
-    setTimeout(() => guestJoin(), delay);
-    return;
-  }
+function copyAnswerCode() {
+  const code = document.getElementById('answer-code-box').value;
+  navigator.clipboard.writeText(code).then(() => showToast('✓ Answer Code copied!', 'success'));
+}
 
-  if (retryable) {
-    statusEl.innerHTML = "✗ Can't reach the connection server.<br><span style='text-decoration:underline;cursor:pointer' id='guest-retry-link'>Tap to retry</span>";
-    statusEl.className = 'connect-status error';
-    document.getElementById('guest-retry-link')?.addEventListener('click', () => {
-      guestRetryCount = 0;
-      guestJoin();
-    });
-  } else {
-    statusEl.textContent='✗ '+err.type; statusEl.className='connect-status error';
-  }
+function newWave() {
+  // Reset and show connect screen to start fresh
+  if (localPC)  { try { localPC.close(); }  catch(e){} localPC  = null; }
+  if (remotePC) { try { remotePC.close(); } catch(e){} remotePC = null; }
+  hostChannel = null; guestChannel = null;
+  connections = {}; liveBlips = {}; incomingFiles = {};
+  document.getElementById('participants-list').innerHTML = '';
+  document.getElementById('blips').innerHTML = `
+    <div class="welcome-blip" id="welcome-blip">
+      <div class="welcome-wave">🌊</div>
+      <div class="welcome-title">Your Wave is open</div>
+      <div class="welcome-sub">Exchange codes manually — no server ever involved.<br>Messages and files go direct between peers.</div>
+      <div class="welcome-privacy">🔒 Zero surveillance · Pure P2P</div>
+    </div>`;
+  document.getElementById('step-role').style.display = '';
+  document.getElementById('step-host-offer').style.display = 'none';
+  document.getElementById('step-guest-join').style.display = 'none';
+  document.getElementById('answer-output-wrap').style.display = 'none';
+  document.getElementById('offer-code-box').value = '';
+  document.getElementById('connect-screen').classList.add('show');
+  setStatus('waiting', 'Not connected');
+  updatePeerCount();
+  closeSidebar();
 }
 
 // ══════════════════════════════════════
 //  DATA HANDLER
 // ══════════════════════════════════════
 function handleData(data, fromId, conn) {
-
   if (data.type === 'JOIN') {
-    // Check max participants
-    const currentPeers = Object.keys(connections).length;
-    if (maxPeers > 0 && currentPeers >= maxPeers) {
-      conn.send({ type:'REJECTED', reason:'Wave is full!' });
-      conn.close();
-      return;
-    }
-    // Check password
-    if (wavePassword && data.password !== wavePassword) {
-      conn.send({ type:'REJECTED', reason:'Wrong password!' });
-      conn.close();
-      return;
-    }
-    connections[fromId] = { conn, name:data.name, color:data.color };
+    connections[fromId] = { channel: isHost ? hostChannel : guestChannel, name:data.name, color:data.color };
     addParticipant(fromId, data.name, data.color);
     updatePeerCount(); setStatus('online', data.name+' joined');
     broadcast({ type:'PEER_JOINED', id:fromId, name:data.name, color:data.color }, fromId);
@@ -1171,53 +757,44 @@ function handleData(data, fromId, conn) {
     addSystemBlip(data.name+' joined the Wave 🌊');
   }
   else if (data.type === 'WELCOME') {
-    if (!connections[fromId]) connections[fromId] = { conn, name:'Host', color:COLORS[0] };
+    connections[fromId] = connections[fromId] || {};
     connections[fromId].name = data.name; connections[fromId].color = data.color;
+    connections[fromId].channel = guestChannel;
     updateParticipant(fromId, data.name, data.color);
     data.peers?.forEach(p => addParticipant(p.id,p.name,p.color));
     updatePeerCount(); setStatus('online','In Wave');
   }
   else if (data.type === 'PEER_JOINED') {
-    if (!connections[data.id]) connections[data.id] = { conn:null, name:data.name, color:data.color };
+    if (!connections[data.id]) connections[data.id] = { channel:null, name:data.name, color:data.color };
     addParticipant(data.id, data.name, data.color);
     updatePeerCount(); showToast('🌊 '+data.name+' joined','success');
   }
-  else if (data.type === 'REJECTED') {
-    showToast('❌ ' + data.reason, 'error');
-    setStatus('waiting', data.reason);
-    document.getElementById('connect-status').textContent = '✗ ' + data.reason;
-    document.getElementById('connect-status').className = 'connect-status error';
-  }
-  else if (data.type === 'WAVE_CLOSED') {
-    handleWaveClosedByHost();
-  }
-  else if (data.type === 'TYPING')    { showLiveTyping(fromId, data.text, data.name, data.color); if(isHost) broadcast(data,fromId); }
-  else if (data.type === 'STOP_TYPING') { clearLiveTyping(fromId); if(isHost) broadcast(data,fromId); }
+  else if (data.type === 'PEER_LEFT')    { removePeer(data.id); }
+  else if (data.type === 'TYPING')       { showLiveTyping(fromId, data.text, data.name, data.color); if(isHost) broadcast(data,fromId); }
+  else if (data.type === 'STOP_TYPING')  { clearLiveTyping(fromId); if(isHost) broadcast(data,fromId); }
   else if (data.type === 'MESSAGE') {
     clearLiveTyping(fromId);
     addBlip(data.text, data.name, data.color, false);
     if (isHost) broadcast(data, fromId);
   }
   else if (data.type === 'SYSTEM') { addSystemBlip(data.text); if(isHost) broadcast(data,fromId); }
-
-  // ── FILE TRANSFER ──
   else if (data.type === 'FILE_META') {
-    const senderName = connections[fromId]?.name || 'Someone';
+    const senderName  = connections[fromId]?.name  || 'Someone';
     const senderColor = connections[fromId]?.color || COLORS[1];
     incomingFiles[data.fileId] = {
-      meta: data, chunks: new Map(), received: 0,
-      cardEl: createIncomingFileCard(data, senderName, senderColor, fromId)
+      meta: data, chunks: [], received: 0,
+      cardEl: createIncomingFileCard(data, senderName, senderColor)
     };
     if (isHost) broadcast(data, fromId);
   }
   else if (data.type === 'FILE_CHUNK') {
     const inc = incomingFiles[data.fileId];
     if (inc) {
-      inc.chunks.set(data.index, data.chunk); // Map for reliable ordering
+      inc.chunks[data.index] = data.chunk;
       inc.received++;
       const pct = Math.round((inc.received / inc.meta.totalChunks) * 100);
-      updateFileProgress('recv_'+data.fileId, pct);
-      if (inc.chunks.size === inc.meta.totalChunks) finalizeFile(data.fileId);
+      updateFileProgress(data.fileId, pct);
+      if (inc.received === inc.meta.totalChunks) finalizeFile(data.fileId);
     }
     if (isHost) broadcast(data, fromId);
   }
@@ -1228,12 +805,16 @@ function handleData(data, fromId, conn) {
 // ══════════════════════════════════════
 function broadcast(data, exceptId=null) {
   Object.entries(connections).forEach(([id,p]) => {
-    if (id!==exceptId && p.conn && p.conn.open) try { p.conn.send(data); } catch(e){}
+    if (id!==exceptId && p.channel && p.channel.readyState==='open')
+      try { p.channel.send(JSON.stringify(data)); } catch(e){}
   });
 }
 function sendToAll(data) {
+  const ch = isHost ? hostChannel : guestChannel;
+  if (ch && ch.readyState==='open') try { ch.send(JSON.stringify(data)); } catch(e){}
   Object.values(connections).forEach(p => {
-    if (p.conn && p.conn.open) try { p.conn.send(data); } catch(e){}
+    if (p.channel && p.channel.readyState==='open')
+      try { p.channel.send(JSON.stringify(data)); } catch(e){}
   });
 }
 
@@ -1245,10 +826,7 @@ function sendMessage() {
   const text  = input.value.trim();
   if (!text) return;
   if (text.length > 4000) { showToast('Message too long (max 4000 chars)','error'); return; }
-  if (Object.keys(connections).length === 0) {
-    showToast('No one connected yet — share your invite link!','error');
-    return;
-  }
+  if (Object.keys(connections).length === 0) { showToast('No one connected yet!','error'); return; }
   addBlip(text, myName, myColor, true);
   sendToAll({ type:'MESSAGE', text, name:myName, color:myColor });
   input.value = ''; input.style.height = 'auto';
@@ -1279,8 +857,8 @@ function onKeyDown(e) {
 function handleFileSelect(e) {
   const file = e.target.files[0];
   if (!file) return;
-  if (file.size > 100 * 1024 * 1024) { showToast('Max file size is 100MB','error'); return; }
-  if (!checkFileSizeLimit(file)) { e.target.value = ''; return; }
+  if (file.size > 250 * 1024 * 1024) { showToast('Max file size is 250MB','error'); return; }
+  if (file.size > 100 * 1024 * 1024) { showToast('Large file — transfer may be slow on mobile',''); }
   if (Object.keys(connections).length === 0) { showToast('No one connected yet!','error'); return; }
   sendFile(file);
   e.target.value = '';
@@ -1291,49 +869,35 @@ function sendFile(file) {
   const isImage = file.type.startsWith('image/');
   const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
   const meta = { type:'FILE_META', fileId, name:file.name, size:file.size, mimeType:file.type, totalChunks, isImage };
-
-  // Show sender's card
-  const card = createSenderFileCard(meta, fileId);
+  createSenderFileCard(meta, fileId);
   sendToAll(meta);
-
-  // Read and chunk the file
   const reader = new FileReader();
   reader.onload = (ev) => {
     const buffer = ev.target.result;
-    // If image, also generate preview for sender
     if (isImage) {
       const blob = new Blob([buffer], { type: file.type });
-      const url  = URL.createObjectURL(blob);
-      addImagePreviewToCard('send_'+fileId, url);
+      addImagePreviewToCard('send_'+fileId, URL.createObjectURL(blob));
     }
-    // Send chunks
     let index = 0;
     function sendNextChunk() {
-      if (index >= totalChunks) {
-        updateFileProgress('send_'+fileId, 100);
-        showSendComplete('send_'+fileId);
-        return;
-      }
+      if (index >= totalChunks) { updateFileProgress('send_'+fileId, 100); showSendComplete('send_'+fileId); return; }
       const start = index * CHUNK_SIZE;
-      const end   = Math.min(start + CHUNK_SIZE, file.size);
-      const chunk = Array.from(new Uint8Array(buffer.slice(start, end)));
+      const chunk = Array.from(new Uint8Array(buffer.slice(start, Math.min(start + CHUNK_SIZE, file.size))));
       sendToAll({ type:'FILE_CHUNK', fileId, index, chunk });
       updateFileProgress('send_'+fileId, Math.round(((index+1)/totalChunks)*100));
       index++;
-      setTimeout(sendNextChunk, 30); // 30ms delay between chunks for mobile
+      setTimeout(sendNextChunk, 5);
     }
     sendNextChunk();
   };
   reader.readAsArrayBuffer(file);
 }
 
-// ── Create file card (sender side) ──
 function createSenderFileCard(meta, fileId) {
   hideWelcome();
   const blips = document.getElementById('blips');
   const div = document.createElement('div');
-  div.className = 'file-blip mine';
-  div.id = 'fb_send_' + fileId;
+  div.className = 'file-blip mine'; div.id = 'fb_send_'+fileId;
   div.innerHTML = `
     <div class="blip-header">
       <span class="blip-name" style="color:${myColor}">You</span>
@@ -1353,18 +917,14 @@ function createSenderFileCard(meta, fileId) {
         <div class="progress-label" id="plabel_send_${fileId}">Sending... 0%</div>
       </div>
     </div>`;
-  blips.appendChild(div);
-  scrollDown();
-  return div;
+  blips.appendChild(div); scrollDown(); return div;
 }
 
-// ── Create file card (receiver side) ──
-function createIncomingFileCard(meta, senderName, senderColor, fromId) {
+function createIncomingFileCard(meta, senderName, senderColor) {
   hideWelcome();
   const blips = document.getElementById('blips');
   const div = document.createElement('div');
-  div.className = 'file-blip theirs';
-  div.id = 'fb_recv_' + meta.fileId;
+  div.className = 'file-blip theirs'; div.id = 'fb_recv_'+meta.fileId;
   const initial = senderName.charAt(0).toUpperCase();
   div.innerHTML = `
     <div class="blip-header">
@@ -1386,9 +946,7 @@ function createIncomingFileCard(meta, senderName, senderColor, fromId) {
         <div class="progress-label" id="plabel_recv_${meta.fileId}">Receiving... 0%</div>
       </div>
     </div>`;
-  blips.appendChild(div);
-  scrollDown();
-  return div;
+  blips.appendChild(div); scrollDown(); return div;
 }
 
 function updateFileProgress(fileId, pct) {
@@ -1397,35 +955,23 @@ function updateFileProgress(fileId, pct) {
   if (fill)  fill.style.width = pct+'%';
   if (label) label.textContent = (pct < 100 ? 'Transferring... ' : 'Complete ') + pct+'%';
 }
-
 function showSendComplete(fileId) {
   const prog = document.getElementById('prog_'+fileId);
   if (prog) prog.querySelector('.progress-label').textContent = '✓ Sent — P2P direct';
 }
-
 function addImagePreviewToCard(fileId, url) {
   const prev = document.getElementById('prev_'+fileId);
   if (prev) prev.innerHTML = `<img src="${url}" alt="preview">`;
 }
-
 function finalizeFile(fileId) {
   const inc = incomingFiles[fileId];
   if (!inc) return;
-  // Reassemble in correct chunk order
-  const sortedChunks = Array.from(inc.chunks.entries())
-    .sort((a, b) => a[0] - b[0])
-    .map(entry => entry[1]);
-  const allBytes = sortedChunks.flatMap(c => c);
+  const allBytes = inc.chunks.flatMap(c => c);
   const blob = new Blob([new Uint8Array(allBytes)], { type: inc.meta.mimeType });
   const url  = URL.createObjectURL(blob);
-  // Image preview
   if (inc.meta.isImage) addImagePreviewToCard('recv_'+fileId, url);
-  // Replace progress with download button
   const prog = document.getElementById('prog_recv_'+fileId);
-  if (prog) prog.innerHTML = `
-    <a class="download-btn" href="${url}" download="${escHtml(inc.meta.name)}">
-      ⬇ Download ${escHtml(inc.meta.name)}
-    </a>`;
+  if (prog) prog.innerHTML = `<a class="download-btn" href="${url}" download="${escHtml(inc.meta.name)}">⬇ Download ${escHtml(inc.meta.name)}</a>`;
   showToast('📁 File received: '+inc.meta.name,'success');
   delete incomingFiles[fileId];
 }
@@ -1446,19 +992,15 @@ function addBlip(text, name, color, isMe) {
       <span class="blip-time">${now()}</span>
     </div>
     <div class="blip-bubble">${escHtml(text)}</div>`;
-  blips.appendChild(div);
-  scrollDown();
+  blips.appendChild(div); scrollDown();
 }
-
 function addSystemBlip(text) {
   hideWelcome();
   const div = document.createElement('div');
   div.className = 'system-blip';
   div.textContent = '— '+text+' —';
-  document.getElementById('blips').appendChild(div);
-  scrollDown();
+  document.getElementById('blips').appendChild(div); scrollDown();
 }
-
 function showLiveTyping(peerId, text, name, color) {
   hideWelcome();
   const blips = document.getElementById('blips');
@@ -1471,13 +1013,13 @@ function showLiveTyping(peerId, text, name, color) {
       <div class="blip-header">
         <div class="blip-avatar" style="background:${color}22;color:${color}">${initial}</div>
         <span class="blip-name" style="color:${color}">${escHtml(name)}</span>
-        <span class="blip-time" style="color:var(--wave-dim);font-size:10px">typing</span>
+        <span class="blip-time" style="color:var(--wave-dim);font-size:10px">live</span>
       </div>
-      <div class="blip-bubble live" id="live-${peerId}">
-        <span class="wave-typing-anim">🌊🌊🌊</span>
-      </div>`;
+      <div class="blip-bubble live" id="live-${peerId}"></div>`;
     blips.appendChild(div); liveBlips[peerId] = div; el = div;
   }
+  const b = document.getElementById('live-'+peerId);
+  if (b) b.textContent = text;
   scrollDown();
 }
 function clearLiveTyping(peerId) {
@@ -1488,7 +1030,6 @@ function clearLiveTyping(peerId) {
 //  PARTICIPANTS
 // ══════════════════════════════════════
 function addParticipant(id, name, color, statusText) {
-  const list = document.getElementById('participants-list');
   if (document.getElementById('p-'+id)) return;
   const initial = name.charAt(0).toUpperCase();
   const div = document.createElement('div');
@@ -1500,7 +1041,7 @@ function addParticipant(id, name, color, statusText) {
       <div class="participant-status">${statusText||'online'}</div>
     </div>
     <div class="online-dot"></div>`;
-  list.appendChild(div);
+  document.getElementById('participants-list').appendChild(div);
 }
 function updateParticipant(id, name, color) {
   const el = document.getElementById('p-'+id);
@@ -1517,164 +1058,16 @@ function removePeer(peerId) {
 }
 
 // ══════════════════════════════════════
-//  CLOSE / LEAVE WAVE
+//  SIDEBAR MOBILE
 // ══════════════════════════════════════
-function openConfirmModal() {
-  const icon  = document.getElementById('confirm-icon');
-  const title = document.getElementById('confirm-title');
-  const sub   = document.getElementById('confirm-sub');
-  const btn   = document.getElementById('confirm-btn');
-
-  if (isHost) {
-    icon.textContent = '🌊';
-    title.textContent = 'Close this Wave?';
-    sub.textContent = "Everyone connected will be disconnected immediately. This can't be undone — you'd need to start a new Wave.";
-    btn.textContent = 'Yes, close it';
-  } else {
-    icon.textContent = '👋';
-    title.textContent = 'Leave this Wave?';
-    sub.textContent = "You'll be disconnected from the host and other participants. You can't rejoin without a new invite link.";
-    btn.textContent = 'Yes, leave';
-  }
-  document.getElementById('confirm-modal').classList.add('show');
-}
-
-function closeConfirmModal() {
-  document.getElementById('confirm-modal').classList.remove('show');
-}
-
-function confirmEndWave() {
-  closeConfirmModal();
-  if (isHost) {
-    // Tell all guests the wave is closing, then tear everything down
-    broadcast({ type:'WAVE_CLOSED' });
-    setTimeout(() => {
-      Object.values(connections).forEach(p => { try { p.conn?.close(); } catch(e){} });
-      if (myPeer) { try { myPeer.destroy(); } catch(e){} }
-      showWaveEndedScreen('host');
-    }, 200); // tiny delay so the WAVE_CLOSED message has time to send
-  } else {
-    // Guest leaving: close connection to host — host's existing close
-    // handler (removePeer) will clean up and notify remaining guests
-    setTimeout(() => {
-      Object.values(connections).forEach(p => { try { p.conn?.close(); } catch(e){} });
-      if (myPeer) { try { myPeer.destroy(); } catch(e){} }
-      showWaveEndedScreen('self');
-    }, 100);
-  }
-}
-
-// Called on a guest's device when the host closes the Wave
-function handleWaveClosedByHost() {
-  Object.values(connections).forEach(p => { try { p.conn?.close(); } catch(e){} });
-  if (myPeer) { try { myPeer.destroy(); } catch(e){} }
-  showWaveEndedScreen('host-closed');
-}
-
-function showWaveEndedScreen(reason) {
-  if (sessionTimer) { clearTimeout(sessionTimer); sessionTimer = null; }
-  setStatus('offline', 'Wave closed');
-  const blips = document.getElementById('blips');
-
-  let title, sub;
-  if (reason === 'host')        { title = 'Wave closed';        sub = "You closed this Wave. Everyone has been disconnected."; }
-  else if (reason === 'self')   { title = "You've left";        sub = "You left the Wave. The conversation continues without you."; }
-  else                          { title = 'Wave closed';        sub = "The host closed this Wave. The conversation is over — nothing was saved."; }
-
-  blips.innerHTML = `
-    <div class="wave-closed-blip">
-      <div class="wave-closed-icon">🌊</div>
-      <div class="wave-closed-title">${title}</div>
-      <div class="wave-closed-sub">${sub}<br><br>Refresh this page to start or join a new Wave.</div>
-    </div>`;
-  blips.classList.remove('empty');
-
-  // Disable input
-  document.getElementById('message-input').disabled = true;
-  document.getElementById('message-input').placeholder = 'Wave closed — refresh to start a new one';
-  document.querySelectorAll('.send-btn, .attach-btn').forEach(b => b.disabled = true);
-  document.getElementById('end-wave-btn').disabled = true;
-  document.getElementById('end-wave-btn').style.opacity = '0.4';
-  document.getElementById('end-wave-btn').style.cursor = 'not-allowed';
-}
-
-
-function getInviteUrl() {
-  if (!myId) return '';
-  const base = window.location.href.split('?')[0];
-  return base + '?wave=' + myId;
-}
-
-function copyLink() {
-  if (!myId) return;
-  const url = getInviteUrl();
-  const btn = document.getElementById('copy-btn');
-
-  // Try modern clipboard API first
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(url).then(() => {
-      btn.textContent = '✓ Link Copied!'; btn.classList.add('copied');
-      showToast('Invite link copied!','success');
-      setTimeout(() => { btn.textContent='🔗 Copy Invite Link'; btn.classList.remove('copied'); }, 2500);
-    }).catch(() => fallbackCopy(url, btn));
-  } else {
-    fallbackCopy(url, btn);
-  }
-}
-
-function fallbackCopy(url, btn) {
-  // Select the invite input directly — works reliably on Android
-  const inp = document.getElementById('invite-input');
-  if (inp) {
-    inp.value = url;
-    inp.select();
-    inp.setSelectionRange(0, 99999);
-    try {
-      document.execCommand('copy');
-      btn.textContent = '✓ Link Copied!'; btn.classList.add('copied');
-      showToast('Invite link copied!','success');
-      setTimeout(() => { btn.textContent='🔗 Copy Invite Link'; btn.classList.remove('copied'); }, 2500);
-    } catch(e) {
-      showToast('Tap the link above to copy manually','');
-    }
-  }
-}
-
-function openShareModal() {
-  if (!myId) return;
-  document.getElementById('share-id-display').textContent = getInviteUrl();
-  document.getElementById('share-modal').classList.add('show');
-}
-
-function closeShareModal() {
-  document.getElementById('share-modal').classList.remove('show');
-}
-
-function shareModalCopy() {
-  if (!myId) return;
-  navigator.clipboard.writeText(getInviteUrl()).then(() => {
-    const btn = document.getElementById('share-copy-btn');
-    btn.textContent = '✓ Copied!'; btn.classList.add('copied');
-    showToast('Invite link copied!','success');
-    setTimeout(() => { btn.textContent='🔗 Copy Invite Link'; btn.classList.remove('copied'); }, 2500);
-  });
-}
-
-function shareWhatsApp() {
-  if (!myId) return;
-  const url = 'https://wa.me/?text=' + encodeURIComponent('Join my private Wave: ' + getInviteUrl());
-  window.open(url, '_blank');
-}
-
 function toggleSidebar() {
-  const sidebar = document.querySelector('.sidebar');
-  const overlay = document.getElementById('sidebar-overlay');
-  sidebar.classList.toggle('open');
-  overlay.classList.toggle('show');
+  const s = document.getElementById('sidebar');
+  const o = document.getElementById('sidebar-overlay');
+  s.classList.toggle('open');
+  o.classList.toggle('show');
 }
-
 function closeSidebar() {
-  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebar-overlay').classList.remove('show');
 }
 
@@ -1689,22 +1082,22 @@ function updatePeerCount() {
   document.getElementById('peer-count').textContent = Object.keys(connections).length;
 }
 function scrollDown() { const b=document.getElementById('blips'); b.scrollTop=b.scrollHeight; }
-function hideWelcome() { const w=document.getElementById('welcome-blip'); if(w){ w.style.display='none'; document.getElementById('blips').classList.remove('empty'); } }
+function hideWelcome() { const w=document.getElementById('welcome-blip'); if(w) w.style.display='none'; }
 function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function now() { return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
 function formatSize(bytes) {
   if (bytes < 1024) return bytes+' B';
-  if (bytes < 1024*1024) return (bytes/1024).toFixed(1)+' KB';
-  return (bytes/(1024*1024)).toFixed(1)+' MB';
+  if (bytes < 1048576) return (bytes/1024).toFixed(1)+' KB';
+  return (bytes/1048576).toFixed(1)+' MB';
 }
 function fileIcon(mime) {
   if (!mime) return '📄';
-  if (mime.startsWith('image/'))       return '🖼️';
-  if (mime.startsWith('video/'))       return '🎬';
-  if (mime.startsWith('audio/'))       return '🎵';
-  if (mime.includes('pdf'))            return '📕';
+  if (mime.startsWith('image/'))  return '🖼️';
+  if (mime.startsWith('video/'))  return '🎬';
+  if (mime.startsWith('audio/'))  return '🎵';
+  if (mime.includes('pdf'))       return '📕';
   if (mime.includes('zip')||mime.includes('rar')||mime.includes('tar')) return '🗜️';
   if (mime.includes('word')||mime.includes('document')) return '📝';
   if (mime.includes('sheet')||mime.includes('excel'))   return '📊';
@@ -1715,182 +1108,13 @@ function showToast(msg, type) {
   t.textContent = msg; t.className='toast show '+(type||'');
   clearTimeout(t._timer); t._timer = setTimeout(()=>t.className='toast', 3200);
 }
-document.getElementById('message-input')?.focus();
 
-// ══════════════════════════════════════
-//  LICENSE / PRO SYSTEM
-// ══════════════════════════════════════
-
-// SHA-256 hashes of valid license keys (keys never stored in app)
-const VALID_KEY_HASHES = ["e9a43262dab9788ffa3dcf7fc63862b53095a9443303b18c5722b6742b5c225b","2150118afb65d896db5e307b227bfb568b917196e4066b5a413e3e37560b4daa","81b3498ff901965b5e2fe7d9c1957e4ee9b3bfaf8e193bf555f09d9c5bf74efd","108861d2e3401d696fe2f40c00cddc3731fe53c71c2c8b5e82227b493df195b6","b3cddb2a3ec42e73a714f5f78f9d4129ad2880aab2cfb40a1424971995b8dba3","db434e08bec3ad698a8bb70640f634f72ac97257ec5efee6489ceef59814c6f7","63f17ffa8bc548298b322675b6726a989901f27c55da24371c093fca4fa83bea","d8fc566c440cc535f7ca918b2980f041521c9cdfe7d85763a99a52b09bef0e57","37495523760a1c513f8390d845403f31ce50dac02324cb2c9f1e26e8fc04bd8c","fcd2ffc09eaeee034470a9558c0a0627569236c61a1d7c29b81ade095cb659dd","126a9a952c510c0c110a0b47e026dc5ac44c909f0375c95949fac93bcb595c26","2e98387541cad86360566b113ede3f45d7eda9b7b8d1f6ba846bad50691ed833","2e563a3cdd17408a6bb5b7b6408858fdea0e0131e6c4cbbeb382f7cda1118f78","f010ba3e746b5b0cb51f8ddd544397a03ba482274d54fb54bee0c870c7fdd5be","edd4dcf02cc89a2b3368bd3bb268c0386a7de1e028593949dcd7cc47167694eb","d5142a246b5baec0f79cf305be4e3b4b98008f8712f82552d66bd4cffe296a4a","7a528fc64c7a229df31146747f5243e685df69057bc04a2a3c4706ae551dd498","a8438a34a45a094f7bd6799310a5ba0e0181a73738dae7d94c3a94d59b3b5b56","f26f8f38ca6ec5655677eaa994dd8886bde78e7e0da00297790b025f05cf22cb","49e82a874243c66cdb40797100b4482a7a31eb9a96219e3fda6e98327aa9db71","b73f5d554936aae115f31b836a398c7cc13455a84ec74f9d408e39bd14a1deaf","878f2653d2513dae8c276604070c213b0e9c4045a92a03daa41ac2978f088635","2ba7bdfa745595985b41929c8d6cf61338c2e73bd947cd4866196e585fe40b61","602d134ad7bc98ecade15d200cd5d4114c8ddc8f2505e620418d75a62c08e17e","ac4687a8c278fbc6ab76b1764b7efe997a4c62a5dd1e52bbd467cb7a93851d5d","bf205be34158c1f524d9e69ea0a2c2e7118f2c5304f46410bd6c0845ddea03d1","c0988aa315ed3f4c03c8806885a56f6b11d56bf10526952d44a92c45b5e0399c","160b86f5783bfb5de8a34c2b6727dc3615eff7015c3a9e4509470b45e9a6a0da","f7b5377d741194fa6de1c840f4e9c32e839e42ebb5c969fd58ece9836489918d","928a0e9abdf669b65adde4178db978c6164991d43b921ee4c25c0f16cb0ecfa7","382fd1c9066dfc1c9e1efc1c73eb3788d143927005a6a98afcf2642a8fc0a973","38a229279e406b2d8fdb621d185031a23ea3ea5e93f532100bdad7d3a16601f9","c2d8ebc9756cff4c4bba4b3d00135954f209596d0dc069e94d06576431b4b457","e08b0e86ed7642f7989a71c75381335ca98a66fc5d9448128928f2667e260c8e","9d1686566325bba157a2e7bb4d305635bb5340f5cd3e0fb0ad8c86e50e793ada","25596fcc94e8abef951951068e0605b52c0996d38cee3fcf56c41b09bfcc7894","28b776793d357bc1446afc0fc6f90b52b90f19761280095c91dd6338d3585f26","cda16bf27640df37c22cc3b7c01102c073a1d916518ea7f59e5cfb06083e8342","c5f3235fc2aacfb82bb9974938b34579a69192a5626e86a6ff3f8b198eedb82c","5a88904f7b9e6c180a2aac3add5f868981d1f74aeb10bb012b7c33712a3e84fb","2444b2aadaf931b13bc0425659bc5cfa903a8643b923a95356ed16211ce84232","a7b36690e1cf72a3827565665ca1f4fc317597997b393b23ad28e8987254eee7","7686570ecfe4f6c3f2936e47001a3d188200fba9c2fd7ef9a0c768ebe56fda00","8ce2bd2f6eca6e6937443a19ddbc41f8c82a00bbc24fe1b0ad998da9c853bda7","95b511b2a41beaff3cf071d224205a12b6f10f9ba6faab694e173da7e1d8a883","0a6c71cd198185362835162130b29a9f9aab573dcb48b0d11f9348246a71d388","cff917250f17ad1bd207c08095b34cd52eadd450b0047f60984bb004a954987d","9a5926800b8318c1bb19573a9005ab857be1f565a29334e2025d5aba2ef428bf","ef5ce3b534dad4232380d43048c890623866171ad635c6879d7fd238a51db209","73f8e02e50ee7976efe2099771741f43ac8a760aa2a78355b46f9ea665ccca23"];
-
-// FREE TIER LIMITS
-const FREE_FILE_LIMIT_MB = 10;
-const FREE_SESSION_MINUTES = 120;
-
-let isPro = false;
-let sessionTimer = null;
-
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-async function checkStoredLicense() {
-  const stored = localStorage.getItem('nw_license');
-  if (!stored) return;
-  const hash = await sha256(stored);
-  if (VALID_KEY_HASHES.includes(hash)) {
-    activatePro(false);
-  }
-}
-
-async function activateLicense() {
-  const input = document.getElementById('pro-key-input');
-  const statusEl = document.getElementById('pro-status');
-  const key = input.value.trim().toUpperCase();
-  if (!key) { statusEl.textContent = 'Enter your license key'; statusEl.className = 'pro-status error'; return; }
-  statusEl.textContent = 'Validating...'; statusEl.className = 'pro-status';
-  const hash = await sha256(key);
-  if (VALID_KEY_HASHES.includes(hash)) {
-    localStorage.setItem('nw_license', key);
-    statusEl.textContent = '✓ Pro activated!'; statusEl.className = 'pro-status success';
-    activatePro(true);
-    setTimeout(closeProModal, 1200);
-  } else {
-    statusEl.textContent = '✗ Invalid key. Check and try again.'; statusEl.className = 'pro-status error';
-  }
-}
-
-function activatePro(showToastMsg) {
-  isPro = true;
-  // Update badge
-  document.getElementById('pro-badge-label').textContent = 'PRO 🌊';
-  document.getElementById('pro-topbar-badge').style.background = 'linear-gradient(135deg,rgba(240,165,0,0.25),rgba(240,165,0,0.1))';
-  document.getElementById('pro-topbar-badge').style.borderColor = 'rgba(240,165,0,0.7)';
-  // Show pro banner in sidebar
-  document.getElementById('pro-active-banner').classList.add('show');
-  // Unlock participant options
-  document.getElementById('max-free-note').style.display = 'none';
-  // Cancel session timer if running
-  if (sessionTimer) { clearTimeout(sessionTimer); sessionTimer = null; }
-  // Hide limit banner
-  document.getElementById('limit-banner').classList.remove('show');
-  if (showToastMsg) showToast('⚡ NeoWave Pro activated!', 'success');
-}
-
-function openProModal() { document.getElementById('pro-modal').classList.add('show'); }
-function closeProModal() { document.getElementById('pro-modal').classList.remove('show'); }
-
-// Format key input automatically
-document.getElementById('pro-key-input')?.addEventListener('input', function() {
-  let v = this.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase();
-  // Insert dashes: NW-XXXX-XXXX-XXXX-XXXX
-  let parts = [];
-  if (v.startsWith('NW')) { parts.push('NW'); v = v.slice(2); }
-  while (v.length > 0) { parts.push(v.slice(0,4)); v = v.slice(4); }
-  this.value = parts.join('-').slice(0,24);
-});
-document.getElementById('pro-key-input')?.addEventListener('keydown', e => {
-  if (e.key === 'Enter') activateLicense();
-});
-
-// Free tier: lock participant options > 2
-function selectMax(el, val) {
-  if (!isPro && val !== 2) {
-    openProModal();
-    return;
-  }
-  document.querySelectorAll('.max-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  maxPeers = val;
-}
-
-// Free tier: session timer (2hr)
-function startFreeSessionTimer() {
-  if (isPro) return;
-  sessionTimer = setTimeout(() => {
-    if (isPro) return;
-    showLimitBanner('Free session (2hr) ended — upgrade to keep the Wave open');
-    showToast('⏱ Free session ended. Upgrade to Pro.', 'error');
-    // Disconnect all peers gracefully
-    Object.values(connections).forEach(p => { try { p.conn?.close(); } catch(e){} });
-  }, FREE_SESSION_MINUTES * 60 * 1000);
-}
-
-// Free tier: file size check
-function checkFileSizeLimit(file) {
-  if (isPro) return true;
-  if (file.size > FREE_FILE_LIMIT_MB * 1024 * 1024) {
-    showLimitBanner(`Files over ${FREE_FILE_LIMIT_MB}MB require Pro`);
-    openProModal();
-    return false;
-  }
-  return true;
-}
-
-function showLimitBanner(text) {
-  const b = document.getElementById('limit-banner');
-  document.getElementById('limit-banner-text').textContent = text;
-  b.classList.add('show');
-}
-
-// Register service worker
+// Service worker
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  });
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 }
 
-// ══════════════════════════════════════
-//  WAVE COLOR SYSTEM (persistent)
-// ══════════════════════════════════════
-const WAVE_COLORS = [
-  { wave:'#0077ff', wave2:'#00c8ff' },
-  { wave:'#7c3aed', wave2:'#a78bfa' },
-  { wave:'#059669', wave2:'#34d399' },
-  { wave:'#dc2626', wave2:'#f87171' },
-  { wave:'#d97706', wave2:'#fbbf24' },
-  { wave:'#db2777', wave2:'#f472b6' },
-  { wave:'#0891b2', wave2:'#22d3ee' },
-];
-
-function applyWaveColor(wave, wave2, save) {
-  const root = document.documentElement;
-  // derive a dim version (50% opacity equivalent via hex)
-  const dimHex = wave.replace('#','');
-  const r = parseInt(dimHex.slice(0,2),16);
-  const g = parseInt(dimHex.slice(2,4),16);
-  const b = parseInt(dimHex.slice(4,6),16);
-  root.style.setProperty('--wave', wave);
-  root.style.setProperty('--wave2', wave2);
-  root.style.setProperty('--wave-dim', `rgba(${r},${g},${b},0.4)`);
-  // mark active swatch
-  document.querySelectorAll('.wave-swatch').forEach(s => {
-    s.classList.toggle('active', s.dataset.wave === wave);
-  });
-  if (save) localStorage.setItem('nw_wave_color', JSON.stringify({ wave, wave2 }));
-}
-
-function initWaveColor() {
-  const stored = localStorage.getItem('nw_wave_color');
-  let wave = '#0077ff', wave2 = '#00c8ff';
-  if (stored) {
-    try { const p = JSON.parse(stored); wave = p.wave; wave2 = p.wave2; } catch(e) {}
-  }
-  applyWaveColor(wave, wave2, false);
-  document.querySelectorAll('.wave-swatch').forEach(s => {
-    s.addEventListener('click', () => {
-      applyWaveColor(s.dataset.wave, s.dataset.wave2, true);
-      showToast('🌊 Wave color updated!', 'success');
-    });
-  });
-}
-
-// Init on load
-checkStoredLicense();
-initWaveColor();
-
+document.getElementById('my-name-input')?.focus();
 </script>
 </body>
 </html>
