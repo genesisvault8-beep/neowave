@@ -352,9 +352,10 @@
   /* ── TYPING INDICATOR ── */
   .typing-indicator { display:none; align-self:flex-start; padding:8px 13px; background:var(--panel); border:1px solid var(--border); border-radius:16px; border-bottom-left-radius:4px; gap:4px; align-items:center; }
   .typing-indicator.show { display:flex; }
-  .typing-dot { width:6px; height:6px; border-radius:50%; background:var(--gray); animation:typedot 1.2s ease-in-out infinite; }
-  .typing-dot:nth-child(2) { animation-delay:0.2s; }
-  .typing-dot:nth-child(3) { animation-delay:0.4s; }
+  .typing-wave { font-size:14px; display:inline-block; animation:wavebob 1s ease-in-out infinite; }
+  .typing-wave:nth-child(2) { animation-delay:0.15s; }
+  .typing-wave:nth-child(3) { animation-delay:0.3s; }
+  @keyframes wavebob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
   @keyframes typedot { 0%,60%,100%{transform:translateY(0);background:var(--gray)} 30%{transform:translateY(-4px);background:var(--wave2)} }
 
   /* ── INPUT AREA ── */
@@ -518,7 +519,7 @@
         </div>
       </div>
       <div class="typing-indicator" id="typing-indicator">
-        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+        <span class="typing-wave">🌊</span><span class="typing-wave">🌊</span>
       </div>
       <div class="input-area">
         <div class="input-row">
@@ -770,7 +771,7 @@ function handleData(data, fromId, conn) {
     updatePeerCount(); showToast('🌊 '+data.name+' joined','success');
   }
   else if (data.type === 'PEER_LEFT')    { removePeer(data.id); }
-  else if (data.type === 'TYPING')       { showLiveTyping(fromId, data.text, data.name, data.color); if(isHost) broadcast(data,fromId); }
+  else if (data.type === 'TYPING')       { showLiveTyping(fromId, data.name, data.color); if(isHost) broadcast(data,fromId); }
   else if (data.type === 'STOP_TYPING')  { clearLiveTyping(fromId); if(isHost) broadcast(data,fromId); }
   else if (data.type === 'MESSAGE') {
     clearLiveTyping(fromId);
@@ -810,11 +811,14 @@ function broadcast(data, exceptId=null) {
   });
 }
 function sendToAll(data) {
-  const ch = isHost ? hostChannel : guestChannel;
-  if (ch && ch.readyState==='open') try { ch.send(JSON.stringify(data)); } catch(e){}
+  // Only send via the connections map — hostChannel/guestChannel are already
+  // stored there, so sending separately caused duplicate delivery.
+  const sentChannels = new Set();
   Object.values(connections).forEach(p => {
-    if (p.channel && p.channel.readyState==='open')
+    if (p.channel && p.channel.readyState==='open' && !sentChannels.has(p.channel)) {
+      sentChannels.add(p.channel);
       try { p.channel.send(JSON.stringify(data)); } catch(e){}
+    }
   });
 }
 
@@ -833,19 +837,23 @@ function sendMessage() {
   clearLiveTyping('me');
 }
 
-let lastSentTyping = '';
+let isCurrentlyTyping = false;
 function onInput(e) {
   const text = e.target.value;
   e.target.style.height = 'auto';
   e.target.style.height = Math.min(e.target.scrollHeight,110)+'px';
-  if (text !== lastSentTyping) {
-    lastSentTyping = text;
-    sendToAll({ type:'TYPING', text, name:myName, color:myColor });
+  if (text.trim() && !isCurrentlyTyping) {
+    isCurrentlyTyping = true;
+    sendToAll({ type:'TYPING', name:myName, color:myColor });
   }
   clearTimeout(typingTimer);
   typingTimer = setTimeout(() => {
-    if (!text.trim()) { sendToAll({ type:'STOP_TYPING', name:myName }); lastSentTyping = ''; }
+    if (isCurrentlyTyping) { sendToAll({ type:'STOP_TYPING', name:myName }); isCurrentlyTyping = false; }
   }, 2000);
+  if (!text.trim() && isCurrentlyTyping) {
+    sendToAll({ type:'STOP_TYPING', name:myName });
+    isCurrentlyTyping = false;
+  }
 }
 function onKeyDown(e) {
   if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
@@ -1001,7 +1009,7 @@ function addSystemBlip(text) {
   div.textContent = '— '+text+' —';
   document.getElementById('blips').appendChild(div); scrollDown();
 }
-function showLiveTyping(peerId, text, name, color) {
+function showLiveTyping(peerId, name, color) {
   hideWelcome();
   const blips = document.getElementById('blips');
   let el = liveBlips[peerId];
@@ -1013,13 +1021,11 @@ function showLiveTyping(peerId, text, name, color) {
       <div class="blip-header">
         <div class="blip-avatar" style="background:${color}22;color:${color}">${initial}</div>
         <span class="blip-name" style="color:${color}">${escHtml(name)}</span>
-        <span class="blip-time" style="color:var(--wave-dim);font-size:10px">live</span>
+        <span class="blip-time" style="color:var(--wave-dim);font-size:10px">typing</span>
       </div>
-      <div class="blip-bubble live" id="live-${peerId}"></div>`;
+      <div class="blip-bubble live" id="live-${peerId}"><span class="typing-wave">🌊</span><span class="typing-wave">🌊</span><span class="typing-wave">🌊</span></div>`;
     blips.appendChild(div); liveBlips[peerId] = div; el = div;
   }
-  const b = document.getElementById('live-'+peerId);
-  if (b) b.textContent = text;
   scrollDown();
 }
 function clearLiveTyping(peerId) {
