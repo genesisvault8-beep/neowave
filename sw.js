@@ -1,4 +1,4 @@
-const CACHE = 'neowave-v3';
+const CACHE = 'neowave-v5';
 const SHELL = [
   '/',
   '/index.html',
