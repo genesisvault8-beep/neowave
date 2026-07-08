@@ -73,9 +73,10 @@
   }
   .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
   .nav-logo-icon {
-    width: 36px; height: 36px; border-radius: 10px;
+    width: auto; min-width: 36px; height: 36px; border-radius: 10px;
     background: linear-gradient(135deg, var(--wave), var(--wave2));
-    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    display: flex; align-items: center; justify-content: center; font-size: 12px;
+    padding: 0 6px; letter-spacing: -2px;
     box-shadow: 0 0 20px rgba(0,119,255,0.4);
     animation: logopulse 3s ease-in-out infinite;
   }
@@ -192,9 +193,10 @@
     border-bottom: 1px solid var(--border); background: rgba(8,14,26,0.97);
   }
   .preview-logo-icon {
-    width: 26px; height: 26px; border-radius: 7px;
+    width: auto; min-width: 26px; height: 26px; border-radius: 7px;
     background: linear-gradient(135deg, var(--wave), var(--wave2));
-    display: flex; align-items: center; justify-content: center; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; font-size: 8px;
+    padding: 0 4px; letter-spacing: -1px;
   }
   .preview-title { font-size: 14px; font-weight: 800; background: linear-gradient(90deg,var(--wave2),var(--wave)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
   .preview-enc { margin-left: auto; font-family:'Syne Mono',monospace; font-size:9px; color:var(--green); border:1px solid rgba(0,232,150,0.3); padding:2px 7px; border-radius:10px; }
@@ -298,7 +300,7 @@
     background: radial-gradient(ellipse at 50% 0%, rgba(0,119,255,0.12) 0%, transparent 60%);
     pointer-events: none;
   }
-  .cta-wave { font-size: 52px; margin-bottom: 16px; animation: wavehand 2s ease-in-out infinite; display:block; }
+  .cta-wave { font-size: 38px; letter-spacing: 2px; margin-bottom: 16px; animation: wavehand 2s ease-in-out infinite; display:block; }
   @keyframes wavehand { 0%,100%{transform:rotate(0)} 25%{transform:rotate(18deg)} 75%{transform:rotate(-9deg)} }
   .cta-title { font-size: clamp(26px,4vw,40px); font-weight: 800; margin-bottom: 12px; letter-spacing:-0.02em; }
   .cta-sub { font-size: 16px; color: var(--gray); margin-bottom: 36px; line-height:1.6; }
@@ -337,7 +339,7 @@
 <!-- NAV -->
 <nav>
   <a href="/" class="nav-logo">
-    <div class="nav-logo-icon">🌊</div>
+    <div class="nav-logo-icon">🌊🌊🌊</div>
     <div class="nav-logo-text">NeoWave</div>
   </a>
   <div class="nav-spacer"></div>
@@ -359,7 +361,7 @@
     NeoWave is a private peer-to-peer messenger. Messages travel directly between devices — no server ever sees them, stores them, or can hand them over.
   </p>
   <div class="hero-actions">
-    <a href="app.html" class="btn-primary">🌊 Open a Wave</a>
+    <a href="app.html" class="btn-primary">🌊🌊🌊 Open a Wave</a>
     <a href="#how" class="btn-secondary">How it works</a>
       <a href="how-to.html" class="btn-secondary" style="font-size:13px;padding:12px 22px;">📖 Full Guide</a>
   </div>
@@ -378,7 +380,7 @@
     <div class="preview-glow"></div>
     <div class="preview-phone">
       <div class="preview-topbar">
-        <div class="preview-logo-icon">🌊</div>
+        <div class="preview-logo-icon">🌊🌊🌊</div>
         <div class="preview-title">NeoWave</div>
         <div class="preview-enc">P2P ENCRYPTED</div>
       </div>
@@ -530,11 +532,11 @@
 <!-- CTA -->
 <section class="cta-section">
   <div class="cta-card">
-    <span class="cta-wave">🌊</span>
+    <span class="cta-wave">🌊🌊🌊</span>
     <h2 class="cta-title">Ready to go off the grid?</h2>
     <p class="cta-sub">Open a Wave in seconds. No signup. No install. Just private.</p>
     <div class="cta-actions">
-      <a href="app.html" class="btn-primary">🌊 Launch NeoWave</a>
+      <a href="app.html" class="btn-primary">🌊🌊🌊 Launch NeoWave</a>
     </div>
     <p class="cta-note">NO SERVERS · NO ACCOUNTS · NO TRACES</p>
   </div>
