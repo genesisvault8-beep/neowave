@@ -73,10 +73,9 @@
   }
   .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
   .nav-logo-icon {
-    width: auto; min-width: 36px; height: 36px; border-radius: 10px;
+    width: 36px; height: 36px; border-radius: 10px;
     background: linear-gradient(135deg, var(--wave), var(--wave2));
-    display: flex; align-items: center; justify-content: center; font-size: 12px;
-    padding: 0 6px; letter-spacing: -2px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
     box-shadow: 0 0 20px rgba(0,119,255,0.4);
     animation: logopulse 3s ease-in-out infinite;
   }
@@ -193,10 +192,9 @@
     border-bottom: 1px solid var(--border); background: rgba(8,14,26,0.97);
   }
   .preview-logo-icon {
-    width: auto; min-width: 26px; height: 26px; border-radius: 7px;
+    width: 26px; height: 26px; border-radius: 7px;
     background: linear-gradient(135deg, var(--wave), var(--wave2));
-    display: flex; align-items: center; justify-content: center; font-size: 8px;
-    padding: 0 4px; letter-spacing: -1px;
+    display: flex; align-items: center; justify-content: center; font-size: 13px;
   }
   .preview-title { font-size: 14px; font-weight: 800; background: linear-gradient(90deg,var(--wave2),var(--wave)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
   .preview-enc { margin-left: auto; font-family:'Syne Mono',monospace; font-size:9px; color:var(--green); border:1px solid rgba(0,232,150,0.3); padding:2px 7px; border-radius:10px; }
@@ -300,7 +298,7 @@
     background: radial-gradient(ellipse at 50% 0%, rgba(0,119,255,0.12) 0%, transparent 60%);
     pointer-events: none;
   }
-  .cta-wave { font-size: 38px; letter-spacing: 2px; margin-bottom: 16px; animation: wavehand 2s ease-in-out infinite; display:block; }
+  .cta-wave { font-size: 52px; margin-bottom: 16px; animation: wavehand 2s ease-in-out infinite; display:block; }
   @keyframes wavehand { 0%,100%{transform:rotate(0)} 25%{transform:rotate(18deg)} 75%{transform:rotate(-9deg)} }
   .cta-title { font-size: clamp(26px,4vw,40px); font-weight: 800; margin-bottom: 12px; letter-spacing:-0.02em; }
   .cta-sub { font-size: 16px; color: var(--gray); margin-bottom: 36px; line-height:1.6; }
@@ -339,7 +337,7 @@
 <!-- NAV -->
 <nav>
   <a href="/" class="nav-logo">
-    <div class="nav-logo-icon">🌊🌊🌊</div>
+    <div class="nav-logo-icon">🌊</div>
     <div class="nav-logo-text">NeoWave</div>
   </a>
   <div class="nav-spacer"></div>
@@ -361,12 +359,14 @@
     NeoWave is a private peer-to-peer messenger. Messages travel directly between devices — no server ever sees them, stores them, or can hand them over.
   </p>
   <div class="hero-actions">
-    <a href="app.html" class="btn-primary">🌊🌊🌊 Open a Wave</a>
+    <a href="app.html" class="btn-primary">🌊 Open a Wave</a>
     <a href="#how" class="btn-secondary">How it works</a>
       <a href="how-to.html" class="btn-secondary" style="font-size:13px;padding:12px 22px;">📖 Full Guide</a>
   </div>
   <div class="hero-trust">
     <div class="hero-trust-item">🔒 End-to-end encrypted</div>
+    <span class="hero-trust-sep">·</span>
+    <div class="hero-trust-item">👥 1-on-1 Wave</div>
     <span class="hero-trust-sep">·</span>
     <div class="hero-trust-item">👁️ Zero server storage</div>
     <span class="hero-trust-sep">·</span>
@@ -380,7 +380,7 @@
     <div class="preview-glow"></div>
     <div class="preview-phone">
       <div class="preview-topbar">
-        <div class="preview-logo-icon">🌊🌊🌊</div>
+        <div class="preview-logo-icon">🌊</div>
         <div class="preview-title">NeoWave</div>
         <div class="preview-enc">P2P ENCRYPTED</div>
       </div>
@@ -416,7 +416,7 @@
         <div class="step-num">STEP 01</div>
         <div class="step-icon">🌊</div>
         <div class="step-title">Open a Wave</div>
-        <div class="step-desc">Hit Launch App, enter your name, set an optional password and participant limit. Your Wave ID is generated instantly — no account, no email.</div>
+        <div class="step-desc">Hit Launch App, enter your name, set an optional password. Your Wave ID is generated instantly — no account, no email. Each Wave connects exactly two people, 1-on-1.</div>
       </div>
       <div class="how-step">
         <div class="step-num">STEP 02</div>
@@ -464,8 +464,8 @@
       </div>
       <div class="feat-card">
         <div class="feat-icon" style="background:rgba(255,68,85,0.1)">👥</div>
-        <div class="feat-title">Participant Limits</div>
-        <div class="feat-desc">Set a max of 2, 5, 10, or unlimited. The Wave rejects new connections once the limit is hit.</div>
+        <div class="feat-title">1-on-1 by Design</div>
+        <div class="feat-desc">Every Wave connects exactly two people, directly. No groups, no extra guests — just a clean, private line between you and them.</div>
       </div>
       <div class="feat-card">
         <div class="feat-icon" style="background:rgba(170,119,255,0.1)">📱</div>
@@ -532,11 +532,11 @@
 <!-- CTA -->
 <section class="cta-section">
   <div class="cta-card">
-    <span class="cta-wave">🌊🌊🌊</span>
+    <span class="cta-wave">🌊</span>
     <h2 class="cta-title">Ready to go off the grid?</h2>
     <p class="cta-sub">Open a Wave in seconds. No signup. No install. Just private.</p>
     <div class="cta-actions">
-      <a href="app.html" class="btn-primary">🌊🌊🌊 Launch NeoWave</a>
+      <a href="app.html" class="btn-primary">🌊 Launch NeoWave</a>
     </div>
     <p class="cta-note">NO SERVERS · NO ACCOUNTS · NO TRACES</p>
   </div>
